@@ -21,16 +21,6 @@ import { Demo } from '@learnbase/ui';
 export default () => <Demo title="hello" />;
 ```
 
-## Badge
-
-### Info Badge <Badge>info</Badge>
-
-### Warning Badge <Badge type="warning">warning</Badge>
-
-### Error Badge <Badge type="error">error</Badge>
-
-### Success Badge <Badge type="success">success</Badge>
-
 ## Container 拓展语法
 
 :::info{title=自定义标题}

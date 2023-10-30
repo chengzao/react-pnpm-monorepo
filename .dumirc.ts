@@ -12,6 +12,10 @@ export default defineConfig({
         link: '/components/Button',
       },
       {
+        title: 'vitePack',
+        link: '/vite-packs/Button',
+      },
+      {
         title: 'hook',
         link: '/hooks/',
       },
@@ -25,6 +29,10 @@ export default defineConfig({
         dir: 'packages/ui/src',
       },
       {
+        type: 'vite-pack',
+        dir: 'packages/vitePack/src',
+      },
+      {
         type: 'hook',
         dir: 'packages/hooks/src',
       },
@@ -32,10 +40,11 @@ export default defineConfig({
   },
   alias: {
     '@learnbase/ui': `${process.cwd()}/packages/ui/src`,
+    '@learnbase/vite-pack': `${process.cwd()}/packages/vitePack/src`,
     '@learnbase/hooks': `${process.cwd()}/packages/hooks/src`,
   },
-  locales: [
-    { id: 'zh-CN', name: '中文' },
-    { id: 'en-US', name: 'English' },
-  ],
+  // locales: [
+  //   { id: 'zh-CN', name: '中文' },
+  //   { id: 'en-US', name: 'English' },
+  // ],
 });

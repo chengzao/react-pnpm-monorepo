@@ -1,0 +1,30 @@
+{
+  "name": "@learnbase/vite-pack",
+  "version": "0.0.2",
+  "description": "",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build -w",
+    "build:tsc": "tsc",
+    "preview": "vite preview",
+    "build:vite": "rimraf dist && vite build",
+    "prepublishOnly": "npm run build:vite"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@babel/runtime": "^7.23.2",
+    "@vitejs/plugin-react": "^4.0.3",
+    "fast-glob": "^3.3.1",
+    "father": "^4.3.6",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.6.1"
+  },
+  "dependencies": {
+    "antd": "^5.10.2"
+  }
+}

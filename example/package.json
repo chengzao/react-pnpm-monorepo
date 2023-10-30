@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@learnbase/ui": "workspace:^",
-    "@learnbase/utils": "workspace:^"
+    "@learnbase/utils": "workspace:^",
+    "@learnbase/vite-pack": "workspace:^"
   }
 }
