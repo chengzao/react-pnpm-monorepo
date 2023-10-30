@@ -16,7 +16,7 @@ Locale : zh-CN
 This is an example component.
 
 ```jsx
-import { Demo } from '@bossjobmatt/ui';
+import { Demo } from '@learnbase/ui';
 
 export default () => <Demo title="hello" />;
 ```

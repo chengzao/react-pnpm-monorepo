@@ -31,8 +31,8 @@ export default defineConfig({
     ],
   },
   alias: {
-    '@bossjobmatt/ui': `${process.cwd()}/packages/ui/src`,
-    '@bossjobmatt/hooks': `${process.cwd()}/packages/hooks/src`,
+    '@learnbase/ui': `${process.cwd()}/packages/ui/src`,
+    '@learnbase/hooks': `${process.cwd()}/packages/hooks/src`,
   },
   locales: [
     { id: 'zh-CN', name: '中文' },

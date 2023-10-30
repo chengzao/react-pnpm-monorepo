@@ -1,5 +1,5 @@
 {
-  "name": "@bossjobmatt/base-monorepo",
+  "name": "@learnbase/base-monorepo",
   "private": true,
   "engines": {
     "node": "^18.0.0",

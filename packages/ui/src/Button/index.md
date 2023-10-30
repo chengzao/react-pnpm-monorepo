@@ -11,7 +11,7 @@ group:
 This is an example component.
 
 ```jsx
-import { Button } from '@bossjobmatt/ui';
+import { Button } from '@learnbase/ui';
 
 export default () => <Button color="red" onClick={() => console.log('clicked')} />;
 ```

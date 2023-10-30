@@ -45,17 +45,17 @@ pnpm install
 # -D : devDependencies
 pnpm install packageA -wD
 
-# 对特定 packages目录下的 @bossjobmatt/ui 安装包
-pnpm add packageB --filter @bossjobmatt/ui
+# 对特定 packages目录下的 @learnbase/ui 安装包
+pnpm add packageB --filter @learnbase/ui
 
 # packages目录下包的互相引用
-# 例如：examples下依赖packages下的 @bossjobmatt/utils
+# 例如：examples下依赖packages下的 @learnbase/utils
 # 进入examples目录下，执行如下
-pnpm add @bossjobmatt/utils
+pnpm add @learnbase/utils
 
 # 此时 package.json 下产生
 "dependencies": {
-  "@bossjobmatt/utils": "workspace:^"
+  "@learnbase/utils": "workspace:^"
 }
 ```
 
@@ -63,7 +63,7 @@ pnpm add @bossjobmatt/utils
 
 - 进入`packages`目录
 - 使用(vite、rollup等工具)新建工程并初始化
-- 修改package.json `"name": "@bossjobmatt/xxx"` 字段
+- 修改package.json `"name": "@learnbase/xxx"` 字段
 - package.json配置的[详细文档地址](https://docs.npmjs.com/cli/v10/configuring-npm/package-json/)
 
 ## 如何发包

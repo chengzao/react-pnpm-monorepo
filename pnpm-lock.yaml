@@ -74,10 +74,10 @@ importers:
 
   example:
     dependencies:
-      '@bossjobmatt/ui':
+      '@learnbase/ui':
         specifier: workspace:^
         version: link:../packages/ui
-      '@bossjobmatt/utils':
+      '@learnbase/utils':
         specifier: workspace:^
         version: link:../packages/utils
     devDependencies:

@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Button } from '@bossjobmatt/ui';
-import { isWindow } from '@bossjobmatt/utils';
+import { Button } from '@learnbase/ui';
+import { isWindow } from '@learnbase/utils';
 
 function App() {
   console.log(isWindow(window));

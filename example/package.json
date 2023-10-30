@@ -19,7 +19,7 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
-    "@bossjobmatt/ui": "workspace:^",
-    "@bossjobmatt/utils": "workspace:^"
+    "@learnbase/ui": "workspace:^",
+    "@learnbase/utils": "workspace:^"
   }
 }
