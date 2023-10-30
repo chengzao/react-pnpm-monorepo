@@ -19,12 +19,7 @@
     "release": "changeset publish",
     "commit": "cz"
   },
-  "keywords": [
-    "bossjob",
-    "monorepo",
-    "util",
-    "ui"
-  ],
+  "keywords": [],
   "author": "",
   "license": "ISC",
   "lint-staged": {
