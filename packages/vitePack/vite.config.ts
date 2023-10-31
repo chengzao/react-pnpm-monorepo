@@ -5,6 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const entries = fastGlob.sync('src/**/*.{ts,tsx}');
 import dts from 'vite-plugin-dts';
+import { libInjectCss, scanEntries } from 'vite-plugin-lib-inject-css';
 
 export default defineConfig(async ({ command, mode }) => {
   return {
@@ -13,6 +14,7 @@ export default defineConfig(async ({ command, mode }) => {
       dts({
         outDir: 'dist/esm',
       }),
+      libInjectCss(),
     ],
     build: {
       rollupOptions: {

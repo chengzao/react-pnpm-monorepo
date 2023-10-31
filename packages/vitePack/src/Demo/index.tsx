@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import './demo.css';
 
 const Demo: FC<{
   /**
@@ -7,7 +8,7 @@ const Demo: FC<{
    */
   title?: string;
 }> = ({ title }) => {
-  return <h3>{title}</h3>;
+  return <h3 className="title">{title}</h3>;
 };
 
 export default Demo;
