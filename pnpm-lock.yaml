@@ -162,6 +162,9 @@ importers:
       vite:
         specifier: ^4.4.5
         version: 4.5.0(@types/node@20.8.9)
+      vite-plugin-css-injected-by-js:
+        specifier: ^3.3.0
+        version: 3.3.0(vite@4.5.0)
       vite-plugin-dts:
         specifier: ^3.6.1
         version: 3.6.3(@types/node@20.8.9)(typescript@5.2.2)(vite@4.5.0)
@@ -14295,6 +14298,14 @@ packages:
       is-buffer: 2.0.5
       unist-util-stringify-position: 3.0.3
       vfile-message: 3.1.4
+    dev: true
+
+  /vite-plugin-css-injected-by-js@3.3.0(vite@4.5.0):
+    resolution: {integrity: sha512-xG+jyHNCmUqi/TXp6q88wTJGeAOrNLSyUUTp4qEQ9QZLGcHWQQsCsSSKa59rPMQr8sOzfzmWDd8enGqfH/dBew==}
+    peerDependencies:
+      vite: '>2.0.0-0'
+    dependencies:
+      vite: 4.5.0(@types/node@20.8.9)
     dev: true
 
   /vite-plugin-dts@3.6.3(@types/node@20.8.9)(typescript@5.2.2)(vite@4.5.0):

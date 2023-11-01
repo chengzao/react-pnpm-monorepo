@@ -1,5 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
+import './button.css';
+
 interface IButtonProps {
   onClick: () => void;
   /**
@@ -14,7 +16,7 @@ const MButton: React.FC<IButtonProps> = (props) => {
 
   return (
     <div onClick={onClick} style={{ color }}>
-      <span>vitePack</span>
+      <span className="name">vitePack</span>
       <Button type="primary">Button</Button>
     </div>
   );
