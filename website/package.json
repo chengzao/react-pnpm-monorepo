@@ -1,0 +1,22 @@
+{
+  "name": "website",
+  "version": "0.0.1",
+  "description": "A static site based on dumi",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "dumi dev",
+    "build": "cross-env DEPLOY_SITE=github dumi build"
+  },
+  "authors": [],
+  "license": "MIT",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "dumi": "^2.2.14",
+    "dumi-theme-antd": "^0.3.12"
+  },
+  "dependencies": {
+    "@learnbase/ui": "workspace:^",
+    "@learnbase/utils": "workspace:^",
+    "@learnbase/vite-pack": "workspace:^"
+  }
+}
