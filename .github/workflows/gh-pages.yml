@@ -1,0 +1,46 @@
+# name: github pages
+
+# on:
+#   push:
+#     branches:
+#       - develop # default branch
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     strategy:
+#       matrix:
+#         node-version: [18]
+
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#         with:
+#           # 如果配置 themeConfig.lastUpdated 为 false，则不需要添加该参数以加快检出速度
+#           fetch-depth: 0
+
+#       - uses: pnpm/action-setup@v2
+#         with:
+#           version: 8
+
+#       - name: Use Node.js ${{ matrix.node-version }}
+#         uses: actions/setup-node@v3
+#         with:
+#           node-version: ${{ matrix.node-version }}
+#           cache: 'pnpm'
+
+#       - name: Install dependencies
+#         run: pnpm install
+
+#       - name: build packages
+#         run: pnpm build
+
+#       - name: Build with dumi
+#         run: cd website && pnpm run build
+
+#       - name: Deploy
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.NPM_GITHUB_TOKEN }}
+#           publish_dir: ./website/dist
