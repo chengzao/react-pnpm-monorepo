@@ -1,0 +1,19 @@
+@import '../../style/themes/index';
+
+@btn-prefix-cls: ~'@{ant-prefix}-btn';
+
+// Button styles
+// -----------------------------
+.@{btn-prefix-cls} {
+  display: inline-block;
+  line-height: 44px;
+  height: 44px;
+  font-size: 16px;
+  color: @black;
+  border: 0;
+  width: 80px;
+
+  &-primary {
+    background-color: @primary-color;
+  }
+}
