@@ -13,8 +13,8 @@
     "dev": "vite build -w",
     "build:tsc": "tsc",
     "preview": "vite preview",
-    "build:vite": "rimraf dist && vite build",
-    "prepublishOnly": "npm run build:vite"
+    "build": "rimraf dist && vite build",
+    "prepublishOnly": "npm run build"
   },
   "publishConfig": {
     "access": "public"
