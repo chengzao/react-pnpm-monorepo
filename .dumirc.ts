@@ -30,7 +30,7 @@ export default defineConfig({
       },
       {
         type: 'vite-pack',
-        dir: 'packages/vitePack/src',
+        dir: 'packages/vite/src',
       },
       {
         type: 'hook',
@@ -40,7 +40,7 @@ export default defineConfig({
   },
   alias: {
     '@learnbase/ui': `${process.cwd()}/packages/ui/src`,
-    '@learnbase/vite-pack': `${process.cwd()}/packages/vitePack/src`,
+    '@learnbase/vite-pack': `${process.cwd()}/packages/vite/src`,
     '@learnbase/hooks': `${process.cwd()}/packages/hooks/src`,
   },
   // locales: [

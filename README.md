@@ -101,6 +101,26 @@ npx changeset pre exit
 
 - 退出预发布模式即可发布正常包版本
 
+## 发布命令
+
+- 预发布模式
+
+```bash
+pnpm run exit:pre # 退出预发布版本模式. e.g: 0.0.1-alpha.1 | 0.0.1-beta.1 | 0.0.1-rc.1
+
+pnpm run mode:alpha # alpha版本. e.g: 0.0.1-alpha.1
+
+pnpm run mode:beta # beta版本. e.g: 0.0.1-alpha.1
+
+pnpm run mode:rc # rc版本. e.g: 0.0.1-rc.1
+```
+
+- 正常包版本
+
+```bash
+pnpm run mode:release # 正式版本. e.g: 0.0.1
+```
+
 ## OTHER
 
 - verdaccio 快速搭建本地npm镜像测试

@@ -2,9 +2,9 @@
   "name": "@learnbase/base-monorepo",
   "private": true,
   "engines": {
-    "node": "^18.0.0",
-    "pnpm": ">=8.9.2"
+    "node": ">=18.18.2"
   },
+  "packageManager": "pnpm@8.12.1",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install && dumi setup",
@@ -13,8 +13,12 @@
     "watch": "pnpm --parallel -r run watch",
     "doc:dev": "dumi dev",
     "doc:build": "dumi build",
+    "exit:pre": "changeset pre exit | true",
+    "mode:alpha": "pnpm run exit:pre && changeset pre enter alpha && changeset && changeset version",
+    "mode:beta": "pnpm run exit:pre && changeset pre enter beta && changeset && changeset version",
+    "mode:rc": "pnpm run exit:pre && changeset pre enter rc && changeset && changeset version",
+    "mode:release": "pnpm run exit:pre && changeset && changeset version",
     "changeset": "changeset",
-    "version-packages": "changeset version",
     "release": "changeset publish",
     "commit": "cz"
   },
