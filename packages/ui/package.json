@@ -23,10 +23,10 @@
     "access": "public"
   },
   "devDependencies": {
-    "@babel/runtime": "^7.23.4",
+    "@babel/runtime": "^7.23.6",
     "father": "^4.3.7"
   },
   "dependencies": {
-    "antd": "^5.11.3"
+    "antd": "^5.12.2"
   }
 }
