@@ -11,7 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "dumi": "^2.2.14",
+    "dumi": "^2.2.16",
     "dumi-theme-antd": "^0.3.12"
   },
   "dependencies": {
