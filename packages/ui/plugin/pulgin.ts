@@ -1,3 +1,6 @@
+// https://github.com/umijs/father/issues/679
+// https://github.com/hexh250786313/blog/issues/30
+
 import type { IApi } from 'father';
 import { addLoader, ILoaderItem } from 'father/dist/builder/bundless/loaders';
 
@@ -6,9 +9,9 @@ export default async (api: IApi) => {
     key: 'addPostcssLoader',
     initialValue: [
       {
-        key: 'father-postcss-loader',
+        key: 'father-less-to-css-loader',
         test: /\.(le|c)ss$/,
-        loader: require.resolve('./loader'),
+        loader: require.resolve('./loader-less-to-css'),
       },
     ],
   });

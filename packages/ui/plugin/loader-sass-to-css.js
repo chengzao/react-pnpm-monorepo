@@ -5,6 +5,9 @@ const autoprefixer = require('autoprefixer');
 
 const loader = function (content) {
   const cb = this.async();
+  this.setOutputOptions({
+    ext: '.css',
+  });
   postcss([
     autoprefixer({
       overrideBrowserslist: ['last 10 versions'],
@@ -12,10 +15,10 @@ const loader = function (content) {
     atImport({
       resolve: (id) => {
         if (id.startsWith('@')) {
-              console.log(this.resource)
-              // your code
+          console.log(this.resource);
+          // your code
         }
-        return id
+        return id;
       },
     }),
   ])

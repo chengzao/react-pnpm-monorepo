@@ -5,4 +5,5 @@ export default defineConfig({
   cjs: {},
   alias: {},
   sourcemap: false,
+  extraBabelPlugins: [],
 });
