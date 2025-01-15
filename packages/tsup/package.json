@@ -1,0 +1,54 @@
+{
+  "name": "@learnbase/stylelint",
+  "type": "module",
+  "version": "0.0.3",
+  "description": "learnbase's stylelint config",
+  "license": "MIT",
+  "keywords": [
+    "stylelint"
+  ],
+  "sideEffects": false,
+  "bin": {
+    "learnbase-stylelint": "./bin/init.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "bin",
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "dev": "tsup --watch --sourcemap",
+    "build": "tsup",
+    "test": "vitest run",
+    "test:dev": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@types/get-value": "^3.0.5",
+    "@types/set-value": "^4.0.3",
+    "comment-json": "^4.2.5",
+    "defu": "^6.1.4",
+    "get-value": "^3.0.1",
+    "set-value": "^4.1.0",
+    "stylelint": "^16.9.0",
+    "stylelint-config-recess-order": "^5.1.0",
+    "stylelint-config-recommended-scss": "^14.1.0",
+    "stylelint-config-standard-scss": "^13.1.0",
+    "stylelint-declaration-block-no-ignored-properties": "^2.8.0",
+    "stylelint-order": "^6.0.4",
+    "tsup": "^8.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
