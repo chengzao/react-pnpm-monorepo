@@ -16,7 +16,7 @@ const loader = function (content) {
       resolve: (id) => {
         if (id.startsWith('@')) {
           console.log(this.resource);
-          // your code
+          // todo: resolve your code
         }
         return id;
       },

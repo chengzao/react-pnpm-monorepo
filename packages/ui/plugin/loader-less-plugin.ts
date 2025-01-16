@@ -1,4 +1,3 @@
-// https://github.com/umijs/father/issues/679
 // https://github.com/hexh250786313/blog/issues/30
 
 import type { IApi } from 'father';

@@ -5,5 +5,13 @@ export default defineConfig({
   cjs: {},
   alias: {},
   sourcemap: false,
-  extraBabelPlugins: [],
+  extraBabelPlugins: [
+    [
+      './plugin/babel-less-to-css.js', // 把 js/ts 文件中的 '.less' 字符转为 '.css'
+      {
+        test: '\\.less',
+      },
+    ],
+  ],
+  plugins: ['./plugin/loader-less-plugin.ts'],
 });
