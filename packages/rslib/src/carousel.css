@@ -1,0 +1,84 @@
+.carousel {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.carousel:hover .dots {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.carousel:hover .arrows {
+  opacity: 1;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  align-items: center;
+
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+}
+
+.dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 100px;
+  /* background: rgba(0, 0, 0, 0.10); */
+  height: 27px;
+  line-height: 27px;
+  margin: 0;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  list-style: none;
+}
+
+.dot:hover {
+  background-color: #fff;
+}
+
+.dot.active {
+  width: 18px;
+  background-color: #fff;
+}
+
+.arrows {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.1);
+  height: 27px;
+  line-height: 27px;
+  gap: 4px;
+
+  opacity: 0;
+}
+
+.arrow {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.arrow.right {
+  transform: rotate(180deg);
+}
+
+.arrow:hover svg path {
+  fill-opacity: 1;
+  fill: #fff;
+}

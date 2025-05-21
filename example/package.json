@@ -21,6 +21,7 @@
   "dependencies": {
     "@learnbase/ui": "workspace:^",
     "@learnbase/utils": "workspace:^",
-    "@learnbase/vite-pack": "workspace:^"
+    "@learnbase/vite-pack": "workspace:^",
+    "@learnbase/rslib": "workspace:^"
   }
 }
