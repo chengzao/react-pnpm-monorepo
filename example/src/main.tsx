@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 
 import './index.css';
 
@@ -16,6 +16,10 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Index /> },
+      {
+        path: 'component',
+        element: <Navigate to="/" replace />,
+      },
       {
         path: 'component/:id',
         element: <Component />,

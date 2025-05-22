@@ -121,8 +121,7 @@ body {
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
-
-  white-space: pre;
+  word-break: break-word;
   padding: 0.5rem;
   border-radius: 8px;
   color: inherit;
@@ -145,7 +144,7 @@ body {
 
 #detail {
   flex: 1;
-  padding: 2rem 4rem;
+  padding: 2rem;
   width: 100%;
 }
 
@@ -156,7 +155,6 @@ body {
 }
 
 #components {
-  max-width: 40rem;
   display: flex;
 }
 
