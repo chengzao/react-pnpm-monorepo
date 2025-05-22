@@ -1,19 +1,13 @@
 import React, { useRef, useState } from 'react';
-import { Carousel } from 'antd';
+import { Carousel, CarouselProps } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
 
 import './carousel.css';
 
-const contentStyle: React.CSSProperties = {
-  margin: 0,
-  height: '160px',
-  color: '#fff',
-  lineHeight: '160px',
-  textAlign: 'center',
-  background: '#364d79',
-};
+type CarouselCustomProps = CarouselProps;
 
-export const CarouselCustom = () => {
+export const CarouselCustom = (props: CarouselCustomProps) => {
+  const { children, afterChange, ...rest } = props;
   const carouselRef = useRef<CarouselRef>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -35,34 +29,29 @@ export const CarouselCustom = () => {
     }
   };
 
-  const data = [
-    { id: 1, name: 'Item 1' },
-    { id: 2, name: 'Item 2' },
-    { id: 3, name: 'Item 3' },
-    { id: 4, name: 'Item 4' },
-  ];
+  const childrenArray = Array.isArray(children) ? children : [children];
 
   return (
     <div className="carousel">
       <Carousel
-        autoplay
-        autoplaySpeed={2000}
+        {...rest}
         arrows={false}
         dots={false}
         ref={carouselRef}
-        afterChange={setActiveIndex}
+        afterChange={(index) => {
+          if (afterChange) {
+            afterChange(index);
+          }
+          setActiveIndex(index);
+        }}
       >
-        {data.map((item) => (
-          <div key={item.id}>
-            <h3 style={contentStyle}>{item.name}</h3>
-          </div>
-        ))}
+        {children}
       </Carousel>
       <div className="controls">
         <ul className="dots">
-          {data.map((item, index) => (
+          {childrenArray.map((_, index) => (
             <li
-              key={item.id}
+              key={index}
               className={`${activeIndex === index ? 'active' : ''} dot`}
               onClick={() => goTo(index)}
             ></li>

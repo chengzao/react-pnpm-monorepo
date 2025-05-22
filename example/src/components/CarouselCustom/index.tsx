@@ -1,21 +1,33 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import * as React from 'react';
-// import { Button } from '@learnbase/ui';
-// import { isWindow } from '@learnbase/utils';
-// import { Button as MButton, Demo } from '@learnbase/vite-pack';
-// import '@learnbase/vite-pack/dist/esm/style.css'
+import React from 'react';
+
 import { CarouselCustom } from '@learnbase/rslib';
+
+const contentStyle: React.CSSProperties = {
+  margin: 0,
+  height: '160px',
+  color: '#fff',
+  lineHeight: '160px',
+  textAlign: 'center',
+  background: '#364d79',
+};
+
+const data = [
+  { id: 1, name: 'Item 1' },
+  { id: 2, name: 'Item 2' },
+  { id: 3, name: 'Item 3' },
+  { id: 4, name: 'Item 4' },
+];
 
 const SkillDemo = () => {
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ width: '500px', height: '300px' }}>
-        <CarouselCustom />
-      </div>
-
-      {/* <Button color="red" onClick={() => console.log('clicked')} />
-        <MButton color="blue" onClick={() => console.log('clicked')} />
-        <Demo title="hahaha" /> */}
+    <div style={{ width: '500px', height: '300px' }}>
+      <CarouselCustom>
+        {data.map((item) => (
+          <div key={item.id}>
+            <h3 style={contentStyle}>{item.name}</h3>
+          </div>
+        ))}
+      </CarouselCustom>
     </div>
   );
 };
