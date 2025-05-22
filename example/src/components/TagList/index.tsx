@@ -31,7 +31,7 @@ const Demo = () => {
   ];
 
   return (
-    <div style={{ width: '500px' }}>
+    <div style={{ width: '50%' }}>
       <TagList tags={tags} />
     </div>
   );
