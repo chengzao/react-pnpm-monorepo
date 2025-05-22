@@ -18,7 +18,7 @@ const data = [
   { id: 4, name: 'Item 4' },
 ];
 
-const SkillDemo = () => {
+const CarouselCustomDemo = () => {
   return (
     <div style={{ width: '500px', height: '300px' }}>
       <CarouselCustom>
@@ -32,4 +32,4 @@ const SkillDemo = () => {
   );
 };
 
-export default SkillDemo;
+export default CarouselCustomDemo;
