@@ -13,7 +13,7 @@ const contentStyle: React.CSSProperties = {
   background: '#364d79',
 };
 
-export const CarouselCustom: React.FC = () => {
+export const CarouselCustom = () => {
   const carouselRef = useRef<CarouselRef>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 

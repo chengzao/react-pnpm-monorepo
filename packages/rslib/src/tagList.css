@@ -1,0 +1,40 @@
+.tag-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.tag-list {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5em;
+  max-height: 3em; /* 2行 */
+  transition: max-height 0.3s ease-out;
+}
+
+.tag-list.expanded {
+  -webkit-line-clamp: unset;
+  max-height: none;
+}
+
+.tag {
+  display: inline-block;
+  margin: 4px 8px 4px 0;
+  padding: 4px 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.toggle-btn {
+  margin-top: 8px;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: underline;
+}

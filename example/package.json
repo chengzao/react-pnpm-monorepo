@@ -22,6 +22,16 @@
     "@learnbase/ui": "workspace:^",
     "@learnbase/utils": "workspace:^",
     "@learnbase/vite-pack": "workspace:^",
-    "@learnbase/rslib": "workspace:^"
+    "@learnbase/rslib": "workspace:^",
+    "@types/react": "^18.3.21",
+    "@types/react-dom": "^18.3.7",
+    "antd": "^5.25.1",
+    "dayjs": "^1.11.13",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.4.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.0",
+    "sort-by": "^1.2.0"
   }
 }
