@@ -9,7 +9,7 @@ export default function Contact() {
 
   const id = searchParams['id'];
 
-  const RenderComponent = Components[id] || ErrorPage;
+  const RenderComponent = id && id in Components ? Components[id as keyof typeof Components] : ErrorPage;
 
   return (
     <div id="components">
