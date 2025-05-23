@@ -29,7 +29,7 @@ const Demo = () => {
   ];
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '60%', margin: '0 auto' }}>
       <h2 style={{ marginBottom: '20px' }}>TagList 组件演示</h2>
 
       <div style={{ marginBottom: '30px' }}>
