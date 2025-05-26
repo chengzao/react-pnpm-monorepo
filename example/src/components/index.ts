@@ -1,5 +1,5 @@
 import CarouselCustom from './CarouselCustom';
 import TagList from './TagList';
-import CalcTags from './CalcTags';
+import TagListWidth from './TagListWidth';
 
-export { CarouselCustom, TagList, CalcTags };
+export { CarouselCustom, TagList, TagListWidth };
