@@ -14,7 +14,9 @@ export const TagListWidth = ({
   const [visibleCount, setVisibleCount] = useState(tags.length);
   const containerRef = useRef<HTMLDivElement>(null);
   const measureBtnRef = useRef<{ offsetWidth: number }>(null);
-  const tagItemsRef = useRef<{ width: number; text: string }[]>([]);
+  const tagItemsRef = useRef<{ width: number; height: number; text: string }[]>(
+    [],
+  );
 
   // 初始化时测量所有标签的宽度和按钮宽度
   useEffect(() => {
@@ -31,7 +33,7 @@ export const TagListWidth = ({
 
     try {
       // 测量标签宽度
-      const tagWidths: { width: number; text: string }[] = [];
+      const tagWidths: { width: number; height: number; text: string }[] = [];
       tags.forEach((tag) => {
         const tempTag = document.createElement('div');
         tempTag.className = 'tag-item';
@@ -44,6 +46,7 @@ export const TagListWidth = ({
         // 使用 getBoundingClientRect 获取更精确的宽度
         tagWidths.push({
           width: tempTag.getBoundingClientRect().width,
+          height: tempTag.getBoundingClientRect().height, // 添加这一行以获取高度，你可以根据需要使用它，或者删除这一行
           text: tag,
         });
         tempContainer.removeChild(tempTag);
@@ -113,7 +116,8 @@ export const TagListWidth = ({
 
       // 第一步：计算在maxLine限制下能显示多少个标签
       for (let i = 0; i < tagItemsRef.current.length; i++) {
-        const tagWidth = tagItemsRef.current[i].width;
+        const tagElement = tagItemsRef.current[i];
+        const tagWidth = tagElement.width;
         const requiredWidth =
           currentLineWidth === 0 ? tagWidth : currentLineWidth + gap + tagWidth;
 
