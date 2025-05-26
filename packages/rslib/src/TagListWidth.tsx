@@ -13,33 +13,69 @@ export const TagListWidth = ({
   const [showExpand, setShowExpand] = useState(false);
   const [visibleCount, setVisibleCount] = useState(tags.length);
   const containerRef = useRef<HTMLDivElement>(null);
-  const measureBtnRef = useRef<HTMLDivElement>(null);
+  const measureBtnRef = useRef<{ offsetWidth: number }>(null);
   const tagItemsRef = useRef<{ width: number; text: string }[]>([]);
 
-  // 初始化时测量所有标签的宽度
+  // 初始化时测量所有标签的宽度和按钮宽度
   useEffect(() => {
     if (tags.length === 0) return;
 
-    // 创建临时容器来测量每个标签的宽度
-    const tempContainer = document.createElement('div');
+    // 创建一个统一的临时容器来测量所有元素
+    const tempContainer: HTMLDivElement = document.createElement('div');
     tempContainer.style.position = 'absolute';
     tempContainer.style.visibility = 'hidden';
     tempContainer.style.pointerEvents = 'none';
-    tempContainer.style.display = 'flex';
-    tempContainer.style.flexWrap = 'wrap';
-    tempContainer.style.gap = '8px';
+    tempContainer.style.top = '-9999px';
+    tempContainer.style.left = '-9999px';
     document.body.appendChild(tempContainer);
 
-    tagItemsRef.current = tags.map((tag) => {
-      const tempTag = document.createElement('div');
-      tempTag.className = 'tag-item';
-      tempTag.textContent = tag;
-      tempContainer.appendChild(tempTag);
-      const width = tempTag.offsetWidth;
-      return { width, text: tag };
-    });
+    try {
+      // 测量标签宽度
+      const tagWidths: { width: number; text: string }[] = [];
+      tags.forEach((tag) => {
+        const tempTag = document.createElement('div');
+        tempTag.className = 'tag-item';
+        tempTag.textContent = tag;
+        tempContainer.appendChild(tempTag);
 
-    document.body.removeChild(tempContainer);
+        // 强制重排以获取准确的宽度
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        tempTag.offsetHeight;
+        // 使用 getBoundingClientRect 获取更精确的宽度
+        tagWidths.push({
+          width: tempTag.getBoundingClientRect().width,
+          text: tag,
+        });
+        tempContainer.removeChild(tempTag);
+      });
+
+      // 测量展开按钮宽度
+      const tempExpandBtn = document.createElement('div');
+      tempExpandBtn.className = 'tag-expand-btn';
+      tempExpandBtn.textContent = '展开';
+      tempContainer.appendChild(tempExpandBtn);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      tempExpandBtn.offsetHeight; // 强制重排
+      const expandBtnWidth = tempExpandBtn.getBoundingClientRect().width;
+
+      const tempCollapseBtn = document.createElement('div');
+      tempCollapseBtn.className = 'tag-expand-btn';
+      tempCollapseBtn.textContent = '收起';
+      tempContainer.appendChild(tempCollapseBtn);
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      tempCollapseBtn.offsetHeight; // 强制重排
+      const collapseBtnWidth = tempCollapseBtn.getBoundingClientRect().width;
+
+      // 存储测量结果
+      tagItemsRef.current = tagWidths;
+      // 取展开和收起按钮的最大宽度以确保布局稳定
+      measureBtnRef.current = {
+        offsetWidth: Math.max(expandBtnWidth, collapseBtnWidth),
+      };
+    } finally {
+      // 确保清理临时容器
+      document.body.removeChild(tempContainer);
+    }
   }, [tags]);
 
   useEffect(() => {
@@ -53,8 +89,12 @@ export const TagListWidth = ({
 
     const check = () => {
       const container = containerRef.current;
-      const measureBtn = measureBtnRef.current;
-      if (!container || !measureBtn || tagItemsRef.current.length === 0) return;
+      if (
+        !container ||
+        tagItemsRef.current.length === 0 ||
+        !measureBtnRef.current
+      )
+        return;
 
       const containerRect = container.getBoundingClientRect();
       const containerWidth = containerRect.width;
@@ -62,12 +102,8 @@ export const TagListWidth = ({
       const containerStyle = window.getComputedStyle(container);
       const gap = parseFloat(containerStyle.gap) || 8;
 
-      // 获取展开按钮的宽度
-      const btnStyle = window.getComputedStyle(measureBtn);
-      const btnWidth =
-        measureBtn.offsetWidth +
-        parseFloat(btnStyle.marginLeft) +
-        parseFloat(btnStyle.marginRight);
+      // 直接使用缓存的按钮宽度
+      const btnWidth = measureBtnRef.current.offsetWidth;
 
       // 基于容器宽度和maxLine计算可见的标签数量
       let currentLine = 1;
@@ -197,18 +233,7 @@ export const TagListWidth = ({
         )}
       </div>
 
-      {/* 隐藏的测量按钮 */}
-      <div
-        style={{
-          position: 'absolute',
-          visibility: 'hidden',
-          pointerEvents: 'none',
-        }}
-      >
-        <div className="tag-expand-btn" ref={measureBtnRef}>
-          {expand ? '收起' : '展开'}
-        </div>
-      </div>
+      {/* 不再需要隐藏的测量按钮，宽度已缓存 */}
     </div>
   );
 };
