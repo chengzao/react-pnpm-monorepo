@@ -227,6 +227,11 @@ const CascaderComponent = ({
     const isIndeterminate = isNodeIndeterminate(node) && multiple;
     const hasChildren = node.children && node.children.length > 0;
 
+    // 单选模式下，只有叶子节点显示radio按钮
+    const showRadio = !multiple && !hasChildren;
+    // 多选模式下显示checkbox，单选模式下非叶子节点不显示选择控件
+    const showCheckbox = multiple;
+
     return (
       <div
         key={node.value}
@@ -235,21 +240,23 @@ const CascaderComponent = ({
         }`}
         onClick={() => !disabled && handleNodeClick(node, level)}
       >
-        <div>
-          <input
-            type={multiple ? 'checkbox' : 'radio'}
-            checked={isSelected}
-            disabled={disabled}
-            ref={(input) => {
-              if (input && multiple) input.indeterminate = isIndeterminate;
-            }}
-            onChange={(e) => {
-              e.stopPropagation();
-              if (!disabled) handleNodeSelect(node);
-            }}
-            className="cascade-node-checkbox"
-          />
-        </div>
+        {(showCheckbox || showRadio) && (
+          <div>
+            <input
+              type={multiple ? 'checkbox' : 'radio'}
+              checked={isSelected}
+              disabled={disabled}
+              ref={(input) => {
+                if (input && multiple) input.indeterminate = isIndeterminate;
+              }}
+              onChange={(e) => {
+                e.stopPropagation();
+                if (!disabled) handleNodeSelect(node);
+              }}
+              className="cascade-node-checkbox"
+            />
+          </div>
+        )}
 
         <span className="cascade-node-label">{node.label}</span>
 

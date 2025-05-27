@@ -5,10 +5,10 @@ import { originData } from './origin';
 
 function Demo() {
   // 多选模式状态
-  const [multipleValue, setMultipleValue] = useState(['xihu', 'tianhe']);
+  const [multipleValue, setMultipleValue] = useState(['a-a-a', 'a-a-b']);
 
   // 单选模式状态
-  const [singleValue, setSingleValue] = useState('xuanwu');
+  const [singleValue, setSingleValue] = useState('b-a-b');
 
   // 禁用状态
   const [disabled, setDisabled] = useState(false);
