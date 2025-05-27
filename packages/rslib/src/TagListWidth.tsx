@@ -31,7 +31,21 @@ interface TagMetrics {
   btnWidth: number;
 }
 
-const useTagMetrics = (tags: string[]) => {
+interface TagListWidthProps {
+  tags: string[];
+  maxLine?: number;
+  expandText?: string;
+  collapseText?: string;
+  formatExpandText?: (hiddenCount: number) => string;
+}
+
+const useTagMetrics = (
+  tags: string[],
+  options: Pick<
+    TagListWidthProps,
+    'expandText' | 'collapseText' | 'formatExpandText'
+  >,
+) => {
   const [metrics, setMetrics] = useState<TagMetrics>({
     tagWidths: [],
     btnWidth: 0,
@@ -57,23 +71,44 @@ const useTagMetrics = (tags: string[]) => {
       });
 
       // 测量按钮宽度
-      const measureButton = (text: string) => {
-        const btn = document.createElement('div');
-        btn.className = 'tag-expand-btn';
-        btn.textContent = text;
-        tempContainer.appendChild(btn);
-        const width = btn.getBoundingClientRect().width;
-        tempContainer.removeChild(btn);
-        return width;
+      const measureButtonWidth = () => {
+        const texts: string[] = [];
+
+        // 收集所有可能的按钮文本
+        if (options.collapseText) texts.push(options.collapseText);
+        if (options.expandText) texts.push(options.expandText);
+        if (options.formatExpandText) {
+          // 生成最大可能文本（假设最多隐藏999项）
+          texts.push(options.formatExpandText(999));
+        }
+
+        console.log('texts', texts);
+
+        // 测量所有可能文本的宽度
+        return Math.max(
+          ...texts.map((text) => {
+            const btn = document.createElement('div');
+            btn.className = 'tag-expand-btn';
+            btn.textContent = text;
+            tempContainer.appendChild(btn);
+            const width = btn.getBoundingClientRect().width;
+            tempContainer.removeChild(btn);
+            return width;
+          }),
+        );
       };
 
-      const btnWidth = Math.max(measureButton('展开'), measureButton('收起'));
-
+      const btnWidth = measureButtonWidth();
       setMetrics({ tagWidths, btnWidth });
     } catch (e) {
       console.error('Measurement failed:', e);
     }
-  }, [tags]);
+  }, [
+    tags,
+    options.expandText,
+    options.collapseText,
+    options.formatExpandText,
+  ]);
 
   return metrics;
 };
@@ -81,15 +116,19 @@ const useTagMetrics = (tags: string[]) => {
 export const TagListWidth = ({
   tags,
   maxLine = 2,
-}: {
-  tags: string[];
-  maxLine?: number;
-}) => {
+  expandText = '展开',
+  collapseText = '收起',
+  formatExpandText,
+}: TagListWidthProps) => {
   const [expand, setExpand] = useState(false);
   const [visibleCount, setVisibleCount] = useState(0);
   const [showExpand, setShowExpand] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const { tagWidths, btnWidth } = useTagMetrics(tags);
+  const { tagWidths, btnWidth } = useTagMetrics(tags, {
+    expandText,
+    collapseText,
+    formatExpandText,
+  });
   const lastWidth = useRef<number>(0);
 
   const calculateVisibility = useCallback(
@@ -215,6 +254,12 @@ export const TagListWidth = ({
     };
   }, [checkLayout]);
 
+  const buttonText = expand
+    ? collapseText
+    : formatExpandText
+      ? formatExpandText(tags.length - visibleCount)
+      : expandText;
+
   return (
     <div className="tags-container" ref={containerRef}>
       <div className="tags">
@@ -229,7 +274,7 @@ export const TagListWidth = ({
             onClick={() => setExpand((e) => !e)}
             aria-expanded={expand}
           >
-            {expand ? '收起' : `展开`}
+            {buttonText}
           </button>
         )}
       </div>

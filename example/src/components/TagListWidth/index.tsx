@@ -42,7 +42,13 @@ const Demo = () => {
       <div style={{ marginBottom: '30px' }}>
         <h3 style={{ marginBottom: '10px' }}>最多显示 2 行：</h3>
         <div style={{ border: '1px solid #e5e7eb', padding: '16px', borderRadius: '8px' }}>
-          <TagListWidth tags={sampleTags} maxLine={2} />
+          <TagListWidth
+            tags={sampleTags}
+            maxLine={2}
+            formatExpandText={(count) => `查看更多（剩余${count}项）`}
+            expandText="查看更多" // 提供基础文本用于宽度估算
+            collapseText="收起列表"
+          />
         </div>
       </div>
 

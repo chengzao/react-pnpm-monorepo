@@ -23,4 +23,7 @@
   padding: 4px 12px;
   white-space: nowrap;
   display: inline-block;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
