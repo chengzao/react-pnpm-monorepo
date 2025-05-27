@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Carousel, CarouselProps } from 'antd';
 import { CarouselRef } from 'antd/es/carousel';
 
-import './carousel.css';
+import './index.css';
 
 type CarouselCustomProps = CarouselProps;
 

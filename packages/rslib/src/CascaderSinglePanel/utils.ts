@@ -9,7 +9,8 @@ export function flattenTreeWithPid(
   tree: CascaderOption[],
   pid = null,
   parent: CascaderOption[] = [],
-): any[] {
+): CascaderOption[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return tree.reduce((acc: any, node: any) => {
     // const { children, ...rest } = node;
     const parents = pid ? [...parent] : [];

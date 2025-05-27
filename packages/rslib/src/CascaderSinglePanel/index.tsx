@@ -27,7 +27,7 @@ export const CascaderSearchSingle = (props: CascaderPanelProps) => {
 
   useEffect(() => {
     const originalOptions = flattenTreeWithPid(options).filter(
-      (item) => item.isLeaf,
+      (item: CascaderOption) => item?.isLeaf,
     );
     setOriginalOptions(() => originalOptions);
   }, [options]);
