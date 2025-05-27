@@ -39,6 +39,7 @@
     "access": "public"
   },
   "dependencies": {
-    "antd": "^5.12.2"
+    "antd": "^5.12.2",
+    "resize-observer-polyfill": "^1.5.1"
   }
 }

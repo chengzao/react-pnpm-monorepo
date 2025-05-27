@@ -1,6 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
-
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './tagListWidth.css';
+
+const loadPolyfill = async () => {
+  if (typeof ResizeObserver === 'undefined') {
+    const module = await import('resize-observer-polyfill');
+    return module.default;
+  }
+  return ResizeObserver;
+};
 
 export const TagListWidth = ({
   tags,
@@ -11,233 +18,191 @@ export const TagListWidth = ({
 }) => {
   const [expand, setExpand] = useState(false);
   const [showExpand, setShowExpand] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(tags.length);
+  const [visibleCount, setVisibleCount] = useState(0); // 初始设为0避免闪烁
   const containerRef = useRef<HTMLDivElement>(null);
   const measureBtnRef = useRef<{ offsetWidth: number }>(null);
-  const tagItemsRef = useRef<{ width: number; height: number; text: string }[]>(
-    [],
-  );
+  const tagItemsRef = useRef<{ width: number; text: string }[]>([]);
+  const [measureVersion, setMeasureVersion] = useState(0); // 强制重新计算
 
-  // 初始化时测量所有标签的宽度和按钮宽度
+  // 测量标签和按钮宽度
   useEffect(() => {
-    if (tags.length === 0) return;
+    if (tags.length === 0) {
+      setVisibleCount(0);
+      setShowExpand(false);
+      return;
+    }
 
-    // 创建一个统一的临时容器来测量所有元素
-    const tempContainer: HTMLDivElement = document.createElement('div');
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.visibility = 'hidden';
-    tempContainer.style.pointerEvents = 'none';
-    tempContainer.style.top = '-9999px';
-    tempContainer.style.left = '-9999px';
+    const tempContainer = document.createElement('div');
+    tempContainer.style.cssText =
+      'position:absolute; visibility:hidden; pointer-events:none; top:-9999px; left:-9999px;';
     document.body.appendChild(tempContainer);
 
     try {
-      // 测量标签宽度
-      const tagWidths: { width: number; height: number; text: string }[] = [];
-      tags.forEach((tag) => {
-        const tempTag = document.createElement('div');
-        tempTag.className = 'tag-item';
-        tempTag.textContent = tag;
-        tempContainer.appendChild(tempTag);
-
-        // 强制重排以获取准确的宽度
-        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-        tempTag.offsetHeight;
-        // 使用 getBoundingClientRect 获取更精确的宽度
-        tagWidths.push({
-          width: tempTag.getBoundingClientRect().width,
-          height: tempTag.getBoundingClientRect().height, // 添加这一行以获取高度，你可以根据需要使用它，或者删除这一行
-          text: tag,
-        });
-        tempContainer.removeChild(tempTag);
+      // 测量标签
+      const tagWidths = tags.map((tag) => {
+        const tagEl = document.createElement('div');
+        tagEl.className = 'tag-item';
+        tagEl.textContent = tag;
+        tempContainer.appendChild(tagEl);
+        const width = tagEl.getBoundingClientRect().width;
+        tempContainer.removeChild(tagEl);
+        return { width, text: tag };
       });
 
-      // 测量展开按钮宽度
-      const tempExpandBtn = document.createElement('div');
-      tempExpandBtn.className = 'tag-expand-btn';
-      tempExpandBtn.textContent = '展开';
-      tempContainer.appendChild(tempExpandBtn);
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      tempExpandBtn.offsetHeight; // 强制重排
-      const expandBtnWidth = tempExpandBtn.getBoundingClientRect().width;
-
-      const tempCollapseBtn = document.createElement('div');
-      tempCollapseBtn.className = 'tag-expand-btn';
-      tempCollapseBtn.textContent = '收起';
-      tempContainer.appendChild(tempCollapseBtn);
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      tempCollapseBtn.offsetHeight; // 强制重排
-      const collapseBtnWidth = tempCollapseBtn.getBoundingClientRect().width;
+      // 测量按钮
+      const btnEl = document.createElement('div');
+      btnEl.className = 'tag-expand-btn';
+      btnEl.textContent = '展开';
+      tempContainer.appendChild(btnEl);
+      const expandWidth = btnEl.getBoundingClientRect().width;
+      btnEl.textContent = '收起';
+      const collapseWidth = btnEl.getBoundingClientRect().width;
 
       // 存储测量结果
       tagItemsRef.current = tagWidths;
-      // 取展开和收起按钮的最大宽度以确保布局稳定
       measureBtnRef.current = {
-        offsetWidth: Math.max(expandBtnWidth, collapseBtnWidth),
+        offsetWidth: Math.max(expandWidth, collapseWidth),
       };
+      setMeasureVersion((v) => v + 1); // 触发重新计算
     } finally {
-      // 确保清理临时容器
       document.body.removeChild(tempContainer);
     }
   }, [tags]);
 
-  useEffect(() => {
-    if (expand) {
-      setVisibleCount(tags.length);
-      setShowExpand(tags.length > 0);
-      return;
+  const calculateLastLineWidth = (
+    count: number,
+    gap: number,
+    containerWidth: number,
+  ) => {
+    let lineWidth = 0;
+    let line = 1;
+    for (let i = 0; i < count; i++) {
+      const tag = tagItemsRef.current[i];
+      const needed = lineWidth === 0 ? tag.width : lineWidth + gap + tag.width;
+      if (needed <= containerWidth) {
+        lineWidth = needed;
+      } else {
+        line++;
+        lineWidth = tag.width;
+      }
+      if (line > maxLine) break;
     }
-
-    let frameId: number;
-
-    const check = () => {
-      const container = containerRef.current;
-      if (
-        !container ||
-        tagItemsRef.current.length === 0 ||
-        !measureBtnRef.current
-      )
-        return;
-
-      const containerRect = container.getBoundingClientRect();
-      const containerWidth = containerRect.width;
-
-      const containerStyle = window.getComputedStyle(container);
-      const gap = parseFloat(containerStyle.gap) || 8;
-
-      // 直接使用缓存的按钮宽度
-      const btnWidth = measureBtnRef.current.offsetWidth;
-
-      // 基于容器宽度和maxLine计算可见的标签数量
-      let currentLine = 1;
-      let currentLineWidth = 0;
-      let lastVisibleIndex = 0;
-      let needsExpand = false;
-
-      // 第一步：计算在maxLine限制下能显示多少个标签
-      for (let i = 0; i < tagItemsRef.current.length; i++) {
-        const tagElement = tagItemsRef.current[i];
-        const tagWidth = tagElement.width;
-        const requiredWidth =
-          currentLineWidth === 0 ? tagWidth : currentLineWidth + gap + tagWidth;
-
-        if (requiredWidth <= containerWidth) {
-          // 当前行可以放下这个标签
-          currentLineWidth = requiredWidth;
-          lastVisibleIndex = i + 1;
-        } else {
-          // 当前行放不下，需要换行
-          if (currentLine < maxLine) {
-            currentLine++;
-            currentLineWidth = tagWidth;
-            lastVisibleIndex = i + 1;
-          } else {
-            // 已达到最大行数限制
-            needsExpand = true;
-            break;
-          }
-        }
-      }
-
-      // 第二步：如果需要展开按钮，逐步减少标签直到能容纳展开按钮
-      if (needsExpand && lastVisibleIndex > 0) {
-        const requiredSpaceForBtn = gap + btnWidth;
-
-        while (lastVisibleIndex > 0) {
-          // 重新计算当前lastVisibleIndex下最后一行的宽度
-          let tempLine = 1;
-          let tempLineWidth = 0;
-          let lastLineWidth = 0;
-
-          for (let i = 0; i < lastVisibleIndex; i++) {
-            const tagWidth = tagItemsRef.current[i].width;
-            const requiredWidth =
-              tempLineWidth === 0 ? tagWidth : tempLineWidth + gap + tagWidth;
-
-            if (requiredWidth <= containerWidth) {
-              tempLineWidth = requiredWidth;
-              if (tempLine === maxLine) {
-                lastLineWidth = tempLineWidth;
-              }
-            } else {
-              tempLine++;
-              tempLineWidth = tagWidth;
-              if (tempLine === maxLine) {
-                lastLineWidth = tempLineWidth;
-              }
-            }
-          }
-
-          // 检查是否能放下展开按钮
-          if (lastLineWidth + requiredSpaceForBtn <= containerWidth) {
-            break; // 可以放下展开按钮
-          }
-
-          lastVisibleIndex--; // 放不下，减少一个标签
-        }
-
-        // 确保至少显示一个标签
-        if (lastVisibleIndex === 0 && tags.length > 0) {
-          lastVisibleIndex = 1;
-        }
-      }
-
-      setVisibleCount(lastVisibleIndex);
-      setShowExpand(needsExpand && tags.length > lastVisibleIndex);
-    };
-
-    const handleResize = () => {
-      cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(check);
-    };
-
-    // 等待标签宽度测量完成后再进行计算
-    const timer = setTimeout(() => {
-      if (tagItemsRef.current.length > 0) {
-        frameId = requestAnimationFrame(check);
-      }
-    }, 0);
-
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      clearTimeout(timer);
-      cancelAnimationFrame(frameId);
-      window.removeEventListener('resize', handleResize);
-    };
-  }, [expand, maxLine]); // 移除了 tags 依赖，因为标签宽度已经在单独的 useEffect 中处理
-
-  const handleExpand = () => {
-    setExpand((v) => !v);
+    return line === maxLine ? lineWidth : 0;
   };
 
+  const checkLayout = useCallback(() => {
+    if (!containerRef.current || tags.length === 0) return;
+    const container = containerRef.current!;
+    const containerWidth = container.getBoundingClientRect().width;
+    const gap = Number(getComputedStyle(container).gap.replace('px', '')) || 8;
+    const btnWidth = measureBtnRef.current?.offsetWidth || 0;
+
+    let lineCount = 1;
+    let currentWidth = 0;
+    let lastVisible = 0;
+    let needsExpand = false;
+
+    // 计算可见标签
+    for (let i = 0; i < tagItemsRef.current.length; i++) {
+      const tag = tagItemsRef.current[i];
+      const needed =
+        currentWidth === 0 ? tag.width : currentWidth + gap + tag.width;
+
+      if (needed <= containerWidth) {
+        currentWidth = needed;
+        lastVisible = i + 1;
+      } else {
+        if (lineCount < maxLine) {
+          lineCount++;
+          currentWidth = tag.width;
+          lastVisible = i + 1;
+        } else {
+          needsExpand = true;
+          break;
+        }
+      }
+    }
+
+    // 调整以容纳按钮
+    if (needsExpand) {
+      const btnSpace = gap + btnWidth;
+      while (lastVisible > 0) {
+        const lastLineWidth = calculateLastLineWidth(
+          lastVisible,
+          gap,
+          containerWidth,
+        );
+        if (lastLineWidth + btnSpace <= containerWidth) break;
+        lastVisible--;
+      }
+    }
+
+    lastVisible = Math.min(lastVisible, tags.length);
+    setVisibleCount(expand ? tags.length : lastVisible);
+
+    const shouldShowExpand =
+      !expand && (needsExpand || lastVisible < tags.length);
+    const shouldShowCollapse = expand && tags.length > 0; // 新增逻辑
+    setShowExpand(shouldShowExpand || shouldShowCollapse);
+  }, [expand, maxLine, measureVersion]);
+
+  useEffect(() => {
+    let observer: ResizeObserver | null = null;
+    let resizeFallback: NodeJS.Timeout;
+    const container = containerRef.current;
+
+    const initObserver = async () => {
+      // 现代浏览器直接使用
+      if (typeof ResizeObserver !== 'undefined') {
+        const ResizeObserver = await loadPolyfill();
+        observer = new ResizeObserver(checkLayout);
+        if (container) observer.observe(container);
+      } else {
+        // 降级方案：窗口resize+轮询检测
+        const handleResize = () => {
+          checkLayout();
+          // 容器可能随父元素变化，增加主动检测
+          resizeFallback = setInterval(() => {
+            const newWidth = container?.offsetWidth;
+            if (newWidth !== container?.dataset.lastWidth) {
+              container?.setAttribute('data-last-width', newWidth + '');
+              checkLayout();
+            }
+          }, 500);
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // 初始检测
+
+        // 清理函数
+        return () => {
+          observer?.disconnect();
+          window.removeEventListener('resize', handleResize);
+          clearInterval(resizeFallback);
+        };
+      }
+    };
+
+    if (container) initObserver();
+
+    return () => {
+      observer?.disconnect();
+      clearInterval(resizeFallback);
+    };
+  }, [checkLayout]);
+
   return (
-    <div>
-      <div
-        className="tags"
-        ref={containerRef}
-        style={{
-          gap: '8px',
-          overflow: 'hidden',
-          maxHeight: expand ? 'none' : 'auto',
-        }}
-      >
-        {tags
-          .slice(0, expand ? tags.length : visibleCount)
-          .map((item, index) => (
-            <div className="tag-item" key={index}>
-              {item}
-            </div>
-          ))}
-
-        {showExpand && (
-          <div className="tag-expand-btn" onClick={handleExpand}>
-            {expand ? '收起' : '展开'}
-          </div>
-        )}
-      </div>
-
-      {/* 不再需要隐藏的测量按钮，宽度已缓存 */}
+    <div className="tags" ref={containerRef} style={{ gap: 8 }}>
+      {tags.slice(0, visibleCount).map((tag, i) => (
+        <div key={i} className="tag-item">
+          {tag}
+        </div>
+      ))}
+      {showExpand && (
+        <button className="tag-expand-btn" onClick={() => setExpand((e) => !e)}>
+          {expand ? '收起' : '展开'}
+        </button>
+      )}
     </div>
   );
 };
