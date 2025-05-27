@@ -1,6 +1,7 @@
 .tags {
   display: flex;
   flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tag-item {
@@ -16,7 +17,7 @@
 
 .tag-expand-btn {
   background: #fff;
-  border: 1px solid #ccc !important;
+  border: 1px solid #ccc;
   border-radius: 5px;
   cursor: pointer;
   padding: 4px 12px;

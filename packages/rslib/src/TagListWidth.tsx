@@ -1,6 +1,23 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './tagListWidth.css';
 
+// 复用全局测量容器
+let globalMeasureContainer: HTMLDivElement | null = null;
+const getMeasureContainer = () => {
+  if (!globalMeasureContainer) {
+    globalMeasureContainer = document.createElement('div');
+    globalMeasureContainer.style.cssText = `
+      position: absolute;
+      visibility: hidden;
+      pointer-events: none;
+      top: -9999px;
+      left: -9999px;
+    `;
+    document.body.appendChild(globalMeasureContainer);
+  }
+  return globalMeasureContainer;
+};
+
 const loadPolyfill = async () => {
   if (typeof ResizeObserver === 'undefined') {
     const module = await import('resize-observer-polyfill');
@@ -9,36 +26,26 @@ const loadPolyfill = async () => {
   return ResizeObserver;
 };
 
-export const TagListWidth = ({
-  tags,
-  maxLine = 2,
-}: {
-  tags: string[];
-  maxLine?: number;
-}) => {
-  const [expand, setExpand] = useState(false);
-  const [showExpand, setShowExpand] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(0); // 初始设为0避免闪烁
-  const containerRef = useRef<HTMLDivElement>(null);
-  const measureBtnRef = useRef<{ offsetWidth: number }>(null);
-  const tagItemsRef = useRef<{ width: number; text: string }[]>([]);
-  const [measureVersion, setMeasureVersion] = useState(0); // 强制重新计算
+interface TagMetrics {
+  tagWidths: { width: number; text: string }[];
+  btnWidth: number;
+}
 
-  // 测量标签和按钮宽度
+const useTagMetrics = (tags: string[]) => {
+  const [metrics, setMetrics] = useState<TagMetrics>({
+    tagWidths: [],
+    btnWidth: 0,
+  });
+
   useEffect(() => {
     if (tags.length === 0) {
-      setVisibleCount(0);
-      setShowExpand(false);
+      setMetrics({ tagWidths: [], btnWidth: 0 });
       return;
     }
 
-    const tempContainer = document.createElement('div');
-    tempContainer.style.cssText =
-      'position:absolute; visibility:hidden; pointer-events:none; top:-9999px; left:-9999px;';
-    document.body.appendChild(tempContainer);
-
+    const tempContainer = getMeasureContainer();
     try {
-      // 测量标签
+      // 测量标签宽度
       const tagWidths = tags.map((tag) => {
         const tagEl = document.createElement('div');
         tagEl.className = 'tag-item';
@@ -49,160 +56,183 @@ export const TagListWidth = ({
         return { width, text: tag };
       });
 
-      // 测量按钮
-      const btnEl = document.createElement('div');
-      btnEl.className = 'tag-expand-btn';
-      btnEl.textContent = '展开';
-      tempContainer.appendChild(btnEl);
-      const expandWidth = btnEl.getBoundingClientRect().width;
-      btnEl.textContent = '收起';
-      const collapseWidth = btnEl.getBoundingClientRect().width;
-
-      // 存储测量结果
-      tagItemsRef.current = tagWidths;
-      measureBtnRef.current = {
-        offsetWidth: Math.max(expandWidth, collapseWidth),
+      // 测量按钮宽度
+      const measureButton = (text: string) => {
+        const btn = document.createElement('div');
+        btn.className = 'tag-expand-btn';
+        btn.textContent = text;
+        tempContainer.appendChild(btn);
+        const width = btn.getBoundingClientRect().width;
+        tempContainer.removeChild(btn);
+        return width;
       };
-      setMeasureVersion((v) => v + 1); // 触发重新计算
-    } finally {
-      document.body.removeChild(tempContainer);
+
+      const btnWidth = Math.max(measureButton('展开'), measureButton('收起'));
+
+      setMetrics({ tagWidths, btnWidth });
+    } catch (e) {
+      console.error('Measurement failed:', e);
     }
   }, [tags]);
 
-  const calculateLastLineWidth = (
-    count: number,
-    gap: number,
-    containerWidth: number,
-  ) => {
-    let lineWidth = 0;
-    let line = 1;
-    for (let i = 0; i < count; i++) {
-      const tag = tagItemsRef.current[i];
-      const needed = lineWidth === 0 ? tag.width : lineWidth + gap + tag.width;
-      if (needed <= containerWidth) {
-        lineWidth = needed;
-      } else {
-        line++;
-        lineWidth = tag.width;
-      }
-      if (line > maxLine) break;
-    }
-    return line === maxLine ? lineWidth : 0;
-  };
+  return metrics;
+};
 
-  const checkLayout = useCallback(() => {
-    if (!containerRef.current || tags.length === 0) return;
-    const container = containerRef.current!;
-    const containerWidth = container.getBoundingClientRect().width;
-    const gap = Number(getComputedStyle(container).gap.replace('px', '')) || 8;
-    const btnWidth = measureBtnRef.current?.offsetWidth || 0;
+export const TagListWidth = ({
+  tags,
+  maxLine = 2,
+}: {
+  tags: string[];
+  maxLine?: number;
+}) => {
+  const [expand, setExpand] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [showExpand, setShowExpand] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { tagWidths, btnWidth } = useTagMetrics(tags);
+  const lastWidth = useRef<number>(0);
 
-    let lineCount = 1;
-    let currentWidth = 0;
-    let lastVisible = 0;
-    let needsExpand = false;
+  const calculateVisibility = useCallback(
+    (containerWidth: number, gap: number) => {
+      let lineCount = 1;
+      let currentWidth = 0;
+      let lastVisible = 0;
+      let needsExpand = false;
 
-    // 计算可见标签
-    for (let i = 0; i < tagItemsRef.current.length; i++) {
-      const tag = tagItemsRef.current[i];
-      const needed =
-        currentWidth === 0 ? tag.width : currentWidth + gap + tag.width;
+      for (let i = 0; i < tagWidths.length; i++) {
+        const tag = tagWidths[i];
+        const needed =
+          currentWidth + (currentWidth === 0 ? 0 : gap) + tag.width;
 
-      if (needed <= containerWidth) {
-        currentWidth = needed;
-        lastVisible = i + 1;
-      } else {
-        if (lineCount < maxLine) {
-          lineCount++;
-          currentWidth = tag.width;
+        if (needed <= containerWidth) {
+          currentWidth = needed;
           lastVisible = i + 1;
         } else {
-          needsExpand = true;
-          break;
+          if (lineCount < maxLine) {
+            lineCount++;
+            currentWidth = tag.width;
+            lastVisible = i + 1;
+          } else {
+            needsExpand = true;
+            break;
+          }
         }
       }
+      return { lastVisible, needsExpand };
+    },
+    [tagWidths, maxLine],
+  );
+
+  const checkLayout = useCallback(() => {
+    const container = containerRef.current;
+    if (!container || tagWidths.length === 0) return;
+
+    const containerWidth = container.getBoundingClientRect().width;
+    if (containerWidth <= 0) {
+      setVisibleCount(0);
+      setShowExpand(false);
+      return;
     }
 
-    // 调整以容纳按钮
+    const gap = Number(getComputedStyle(container).gap.replace('px', '')) || 8;
+    const { lastVisible, needsExpand } = calculateVisibility(
+      containerWidth,
+      gap,
+    );
+
+    let adjustedVisible = lastVisible;
     if (needsExpand) {
       const btnSpace = gap + btnWidth;
-      while (lastVisible > 0) {
-        const lastLineWidth = calculateLastLineWidth(
-          lastVisible,
-          gap,
-          containerWidth,
-        );
-        if (lastLineWidth + btnSpace <= containerWidth) break;
-        lastVisible--;
+      while (adjustedVisible > 0) {
+        let lineWidth = 0;
+        let line = 1;
+        for (let i = 0; i < adjustedVisible; i++) {
+          const needed =
+            lineWidth + (lineWidth === 0 ? 0 : gap) + tagWidths[i].width;
+          if (needed <= containerWidth) {
+            lineWidth = needed;
+          } else {
+            line++;
+            lineWidth = tagWidths[i].width;
+          }
+          if (line > maxLine) break;
+        }
+        if (line === maxLine && lineWidth + btnSpace <= containerWidth) break;
+        adjustedVisible--;
       }
     }
 
-    lastVisible = Math.min(lastVisible, tags.length);
-    setVisibleCount(expand ? tags.length : lastVisible);
+    const finalVisible = expand
+      ? tagWidths.length
+      : Math.min(adjustedVisible, tagWidths.length);
+    const shouldShow = expand
+      ? tagWidths.length > 0
+      : needsExpand || adjustedVisible < tagWidths.length;
 
-    const shouldShowExpand =
-      !expand && (needsExpand || lastVisible < tags.length);
-    const shouldShowCollapse = expand && tags.length > 0; // 新增逻辑
-    setShowExpand(shouldShowExpand || shouldShowCollapse);
-  }, [expand, maxLine, measureVersion]);
+    setVisibleCount((prev) => (prev !== finalVisible ? finalVisible : prev));
+    setShowExpand((prev) => (prev !== shouldShow ? shouldShow : prev));
+  }, [expand, tagWidths, btnWidth, maxLine, calculateVisibility]);
 
+  // 响应式布局处理
   useEffect(() => {
     let observer: ResizeObserver | null = null;
-    let resizeFallback: NodeJS.Timeout;
-    const container = containerRef.current;
+    let rafId: number;
+    let isMounted = true;
 
     const initObserver = async () => {
-      // 现代浏览器直接使用
-      if (typeof ResizeObserver !== 'undefined') {
+      try {
         const ResizeObserver = await loadPolyfill();
-        observer = new ResizeObserver(checkLayout);
-        if (container) observer.observe(container);
-      } else {
-        // 降级方案：窗口resize+轮询检测
-        const handleResize = () => {
-          checkLayout();
-          // 容器可能随父元素变化，增加主动检测
-          resizeFallback = setInterval(() => {
-            const newWidth = container?.offsetWidth;
-            if (newWidth !== container?.dataset.lastWidth) {
-              container?.setAttribute('data-last-width', newWidth + '');
-              checkLayout();
-            }
-          }, 500);
-        };
+        if (!isMounted || !containerRef.current) return;
 
-        window.addEventListener('resize', handleResize);
-        handleResize(); // 初始检测
-
-        // 清理函数
-        return () => {
-          observer?.disconnect();
-          window.removeEventListener('resize', handleResize);
-          clearInterval(resizeFallback);
+        observer = new ResizeObserver(() => {
+          cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(checkLayout);
+        });
+        observer.observe(containerRef.current);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (e) {
+        // 降级方案使用RAF轮询
+        const checkSize = () => {
+          if (!isMounted || !containerRef.current) return;
+          const newWidth = containerRef.current.offsetWidth;
+          if (newWidth !== lastWidth.current) {
+            lastWidth.current = newWidth;
+            checkLayout();
+          }
+          requestAnimationFrame(checkSize);
         };
+        checkSize();
       }
     };
 
-    if (container) initObserver();
+    initObserver();
+    checkLayout(); // 初始检查
 
     return () => {
+      isMounted = false;
       observer?.disconnect();
-      clearInterval(resizeFallback);
+      cancelAnimationFrame(rafId);
     };
   }, [checkLayout]);
 
   return (
-    <div className="tags" ref={containerRef} style={{ gap: 8 }}>
-      {tags.slice(0, visibleCount).map((tag, i) => (
-        <div key={i} className="tag-item">
-          {tag}
-        </div>
-      ))}
-      {showExpand && (
-        <button className="tag-expand-btn" onClick={() => setExpand((e) => !e)}>
-          {expand ? '收起' : '展开'}
-        </button>
-      )}
+    <div className="tags-container" ref={containerRef}>
+      <div className="tags">
+        {tags.slice(0, visibleCount).map((tag, i) => (
+          <div key={`${tag}-${i}`} className="tag-item">
+            {tag}
+          </div>
+        ))}
+        {showExpand && (
+          <button
+            className="tag-expand-btn"
+            onClick={() => setExpand((e) => !e)}
+            aria-expanded={expand}
+          >
+            {expand ? '收起' : `展开`}
+          </button>
+        )}
+      </div>
     </div>
   );
 };
