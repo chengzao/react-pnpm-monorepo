@@ -1,3 +1,4 @@
+// CascaderPanel.tsx
 import React, { useState, useMemo } from 'react';
 import './index.css';
 
@@ -15,6 +16,11 @@ interface CascaderPanelProps {
   onChange?: (value: string[]) => void;
 }
 
+type CheckState = {
+  checked: boolean;
+  indeterminate: boolean;
+};
+
 const CascaderPanel: React.FC<CascaderPanelProps> = ({
   options,
   value = [],
@@ -30,66 +36,89 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
     const flatten = (nodes: TreeNode[], parent?: TreeNode) => {
       nodes.forEach((node) => {
         node.parent = parent;
-        node.isLeaf = !node.children || node.children.length === 0;
+        node.isLeaf = !node.children?.length;
         map.set(node.value, node);
-        if (node.children) {
-          flatten(node.children, node);
-        }
+        node.children && flatten(node.children, node);
       });
     };
     flatten(options);
     return map;
   }, [options]);
 
+  // 计算选择状态
+  const checkStates = useMemo(() => {
+    const states = new Map<string, CheckState>();
+
+    const calculateState = (node: TreeNode): CheckState => {
+      if (node.isLeaf) {
+        return {
+          checked: selectedKeys.has(node.value),
+          indeterminate: false,
+          hasCheckedChild: false,
+        };
+      }
+
+      let hasChecked = false;
+      let hasUnchecked = false;
+      let hasCheckedChild = false;
+
+      node.children?.forEach((child) => {
+        const childState = calculateState(child);
+        if (childState.checked || childState.indeterminate) hasChecked = true;
+        if (!childState.checked || childState.indeterminate)
+          hasUnchecked = true;
+        if (childState.checked || childState.hasCheckedChild)
+          hasCheckedChild = true;
+      });
+
+      return {
+        checked: !hasUnchecked,
+        indeterminate: hasChecked && hasUnchecked,
+        hasCheckedChild,
+      };
+    };
+
+    const traverse = (nodes: TreeNode[]) => {
+      nodes.forEach((node) => {
+        states.set(node.value, calculateState(node));
+        node.children && traverse(node.children);
+      });
+    };
+
+    traverse(options);
+    return states;
+  }, [options, selectedKeys]);
+
   // 处理节点选择
   const handleSelect = (node: TreeNode) => {
     const newSelected = new Set(selectedKeys);
-    const shouldSelect = !selectedKeys.has(node.value);
+    const state = checkStates.get(node.value)!;
+    const shouldSelect = !state.checked;
 
-    const traverse = (n: TreeNode) => {
-      shouldSelect ? newSelected.add(n.value) : newSelected.delete(n.value);
-      n.children?.forEach((child) => traverse(child));
+    const toggleSelection = (n: TreeNode) => {
+      if (n.isLeaf) {
+        shouldSelect ? newSelected.add(n.value) : newSelected.delete(n.value);
+      }
+      n.children?.forEach(toggleSelection);
     };
 
-    traverse(node);
+    toggleSelection(node);
     setSelectedKeys(newSelected);
     onChange?.(Array.from(newSelected));
   };
 
-  // 搜索过滤逻辑
+  // 搜索功能
   const searchResults = useMemo(() => {
     if (!searchValue.trim()) return [];
-
-    const results: TreeNode[] = [];
     const lowerSearch = searchValue.toLowerCase();
 
-    const searchNodes = (nodes: TreeNode[]) => {
-      nodes.forEach((node) => {
-        // 仅在当前节点匹配时记录叶子节点或最后一级节点
-        if (node.label.toLowerCase().includes(lowerSearch)) {
-          // 判断是否是最后一级或叶子节点
-          if (!node.children || node.children.length === 0) {
-            results.push(node);
-          }
-        }
+    return Array.from(flattenTree.values()).filter((node) => {
+      const isMatch = node.label.toLowerCase().includes(lowerSearch);
+      return isMatch && (!node.children?.length || node.isLeaf);
+    });
+  }, [searchValue, flattenTree]);
 
-        // 继续搜索子节点
-        if (node.children) {
-          searchNodes(node.children);
-        }
-      });
-    };
-
-    searchNodes(options);
-    return results;
-  }, [options, searchValue]);
-
-  // 获取当前展示的面板数据
-  const getPanelData = (level: number): TreeNode[] => {
-    if (level === 0) return options;
-    return activePath[level - 1]?.children || [];
-  };
-
+  // 获取节点路径
   const getNodePath = (node: TreeNode) => {
     const path = [];
     let current = node;
@@ -101,57 +130,58 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
   };
 
   // 渲染搜索结果
-  const renderSearchResults = () => {
-    return (
-      <div className="search-results">
-        {searchResults.map((node) => (
-          <div key={node.value} className="search-result-item">
-            <input
-              type="checkbox"
-              checked={selectedKeys.has(node.value)}
-              onChange={() => handleSelect(node)}
-              className="node-checkbox"
-            />
-            <span className="search-result-label">
-              {node.label}
-              <span className="node-path-hint">（{getNodePath(node)}）</span>
-            </span>
-          </div>
-        ))}
-      </div>
-    );
-  };
+  const renderSearchResults = () => (
+    <div className="search-results">
+      {searchResults.map((node) => (
+        <div key={node.value} className="search-result-item">
+          <input
+            type="checkbox"
+            className="custom-checkbox"
+            checked={selectedKeys.has(node.value)}
+            onChange={() => handleSelect(node)}
+          />
+          <span className="node-label">
+            {node.label}
+            <span className="node-path">{getNodePath(node)}</span>
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 
   // 渲染级联面板
-  const renderPanel = (level: number) => {
-    const nodes = getPanelData(level);
-    if (!nodes.length) return null;
-
-    return (
-      <div className="cascader-panel">
-        <div className="panel-header">
-          {level > 0 && (
-            <div className="breadcrumb">
-              {activePath.slice(0, level).map((node, i) => (
+  const renderPanel = (nodes: TreeNode[], level: number) => (
+    <div key={level} className="cascader-panel">
+      <div className="panel-header">
+        {level > 0 && (
+          <div className="breadcrumb">
+            {activePath.slice(0, level).map((node, i) => {
+              const state = checkStates.get(node.value)!;
+              return (
                 <span
                   key={node.value}
-                  className="breadcrumb-item"
+                  className={`breadcrumb-item ${
+                    state.hasCheckedChild ? 'has-child-checked' : ''
+                  }`}
                   onClick={() => setActivePath((prev) => prev.slice(0, i + 1))}
                 >
                   {node.label}
                   {i < level - 1 && <span className="separator">/</span>}
                 </span>
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="panel-content">
-          {nodes.map((node) => (
+              );
+            })}
+          </div>
+        )}
+      </div>
+      <div className="panel-content">
+        {nodes.map((node) => {
+          const state = checkStates.get(node.value)!;
+          return (
             <div
               key={node.value}
-              className={`node-item ${
-                selectedKeys.has(node.value) ? 'checked' : ''
-              } ${node.children ? 'has-children' : ''}`}
+              className={`node-item
+                ${state.checked ? 'checked' : ''}
+                ${state.hasCheckedChild ? 'has-child-checked' : ''}`}
               onClick={() =>
                 node.children &&
                 setActivePath((prev) => [...prev.slice(0, level), node])
@@ -159,19 +189,21 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
             >
               <input
                 type="checkbox"
-                checked={selectedKeys.has(node.value)}
+                className={`custom-checkbox ${
+                  state.indeterminate ? 'indeterminate' : ''
+                }`}
+                checked={state.checked}
                 onChange={() => handleSelect(node)}
-                className="node-checkbox"
                 onClick={(e) => e.stopPropagation()}
               />
               <span className="node-label">{node.label}</span>
               {node.children && <span className="arrow-icon">❯</span>}
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
-    );
-  };
+    </div>
+  );
 
   return (
     <div className="cascader-container">
@@ -189,8 +221,8 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
         renderSearchResults()
       ) : (
         <div className="panels-container">
-          {renderPanel(0)}
-          {activePath.map((_, i) => renderPanel(i + 1))}
+          {renderPanel(options, 0)}
+          {activePath.map((node, i) => renderPanel(node.children || [], i + 1))}
         </div>
       )}
     </div>
