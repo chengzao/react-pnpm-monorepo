@@ -19,7 +19,7 @@ interface CascaderPanelProps {
   onSelect?: (values: string[], items: CascaderOption[]) => void;
 }
 
-export const CascaderSearchSingle: React.FC<CascaderPanelProps> = (props) => {
+export const CascaderSearchSingle = (props: CascaderPanelProps) => {
   const { options, value = [], onSelect } = props;
   const [originalOptions, setOriginalOptions] = useState<CascaderOption[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
