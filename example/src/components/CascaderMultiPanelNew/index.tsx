@@ -5,7 +5,8 @@ import { originData } from './origin';
 
 function Demo() {
   // 多选模式状态
-  const [multipleValue, setMultipleValue] = useState(['a-a-b']);
+  const [multipleValue, setMultipleValue] = useState(['a-a-a']);
+  const [multipleValue1, setMultipleValue1] = useState(['a-a-b']);
 
   // 单选模式状态
   const [singleValue, setSingleValue] = useState('b-a-b');
@@ -16,6 +17,11 @@ function Demo() {
   const handleMultipleChange = (newValue) => {
     console.log('多选值变化:', newValue);
     setMultipleValue(newValue);
+  };
+
+  const handleMultipleChange1 = (newValue) => {
+    console.log('多选值变化:', newValue);
+    setMultipleValue1(newValue);
   };
 
   const handleSingleChange = (newValue) => {
@@ -36,7 +42,7 @@ function Demo() {
 
       {/* 多选模式 */}
       <div style={{ marginBottom: '40px' }}>
-        <h2>多选模式 (默认)</h2>
+        <h2>多选模式 (默认) : hover</h2>
         <p>当前选中值: {JSON.stringify(multipleValue)}</p>
         <CascaderMultiPanelNew
           options={originData}
@@ -47,6 +53,24 @@ function Demo() {
           disabled={disabled}
           maxTagCount={3}
           searchable={true}
+          expandOnHover={true}
+        />
+      </div>
+
+      {/* 多选模式 */}
+      <div style={{ marginBottom: '40px' }}>
+        <h2>多选模式 (默认) : click</h2>
+        <p>当前选中值: {JSON.stringify(multipleValue)}</p>
+        <CascaderMultiPanelNew
+          options={originData}
+          value={multipleValue1}
+          onChange={handleMultipleChange1}
+          placeholder="请选择地区..."
+          multiple={true}
+          disabled={disabled}
+          maxTagCount={3}
+          searchable={true}
+          expandOnHover={false}
         />
       </div>
 
