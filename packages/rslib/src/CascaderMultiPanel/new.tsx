@@ -11,10 +11,13 @@ const CascaderComponent = ({
   disabled = false,
   maxTagCount = 5,
   searchable = true,
+  expandOnHover = true, // 新增：是否支持鼠标悬停展开
+  hoverDelay = 300, // 新增：悬停延迟时间（毫秒）
 }) => {
   const [searchValue, setSearchValue] = useState('');
   const [activePath, setActivePath] = useState([]);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [hoverTimers, setHoverTimers] = useState({}); // 存储悬停定时器
 
   // 将传入的value转换为Set格式进行内部处理
   const selectedValues = useMemo(() => {
@@ -224,6 +227,51 @@ const CascaderComponent = ({
     }
   };
 
+  // 处理鼠标悬停展开子节点
+  const handleNodeMouseEnter = (node, level) => {
+    if (!expandOnHover || disabled || !node.children) return;
+
+    // 清除之前的定时器
+    const timerKey = `${level}-${node.value}`;
+    if (hoverTimers[timerKey]) {
+      clearTimeout(hoverTimers[timerKey]);
+    }
+
+    // 设置新的定时器
+    const timer = setTimeout(() => {
+      const newPath = activePath.slice(0, level + 1);
+      newPath[level] = node;
+      setActivePath(newPath);
+
+      // 清理定时器引用
+      setHoverTimers((prev) => {
+        const newTimers = { ...prev };
+        delete newTimers[timerKey];
+        return newTimers;
+      });
+    }, hoverDelay);
+
+    setHoverTimers((prev) => ({
+      ...prev,
+      [timerKey]: timer,
+    }));
+  };
+
+  // 处理鼠标离开
+  const handleNodeMouseLeave = (node, level) => {
+    if (!expandOnHover || disabled) return;
+
+    const timerKey = `${level}-${node.value}`;
+    if (hoverTimers[timerKey]) {
+      clearTimeout(hoverTimers[timerKey]);
+      setHoverTimers((prev) => {
+        const newTimers = { ...prev };
+        delete newTimers[timerKey];
+        return newTimers;
+      });
+    }
+  };
+
   // 获取当前层级数据（级联面板模式）
   const getCurrentLevelData = (level) => {
     if (level === 0) {
@@ -276,6 +324,8 @@ const CascaderComponent = ({
           activePath[level]?.value === node.value ? 'active' : ''
         }`}
         onClick={() => !disabled && handleNodeClick(node, level)}
+        onMouseEnter={() => handleNodeMouseEnter(node, level)}
+        onMouseLeave={() => handleNodeMouseLeave(node, level)}
       >
         {(showCheckbox || showRadio) && (
           <div>
@@ -334,6 +384,15 @@ const CascaderComponent = ({
 
   const selectedLabels = getSelectedLabels();
   const isSearchMode = searchValue.trim().length > 0;
+
+  // 组件卸载时清理所有定时器
+  useEffect(() => {
+    return () => {
+      Object.values(hoverTimers).forEach((timer) => {
+        if (timer) clearTimeout(timer);
+      });
+    };
+  }, [hoverTimers]);
 
   return (
     <div
