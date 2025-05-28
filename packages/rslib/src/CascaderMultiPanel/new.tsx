@@ -2,7 +2,28 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, ChevronRight, X } from 'lucide-react';
 import './new.css';
 
-const CascaderComponent = ({
+type ValueType = string | number;
+
+interface CascaderOption {
+  value: ValueType;
+  label: string;
+  children?: CascaderOption[];
+}
+
+interface CascaderMultiPanelProps {
+  options?: CascaderOption[];
+  value?: ValueType | ValueType[];
+  onChange?: (value: ValueType | ValueType[] | null) => void;
+  placeholder?: string;
+  multiple?: boolean;
+  disabled?: boolean;
+  maxTagCount?: number;
+  searchable?: boolean;
+  expandOnHover?: boolean;
+  hoverDelay?: number;
+}
+
+const CascaderComponent: React.FC<CascaderMultiPanelProps> = ({
   options = [],
   value = [],
   onChange,
@@ -11,24 +32,32 @@ const CascaderComponent = ({
   disabled = false,
   maxTagCount = 5,
   searchable = true,
-  expandOnHover = true, // 新增：是否支持鼠标悬停展开
-  hoverDelay = 300, // 新增：悬停延迟时间（毫秒）
+  expandOnHover = true,
+  hoverDelay = 300,
 }) => {
-  const [searchValue, setSearchValue] = useState('');
-  const [activePath, setActivePath] = useState([]);
-  const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [hoverTimers, setHoverTimers] = useState({}); // 存储悬停定时器
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [activePath, setActivePath] = useState<CascaderOption[]>([]);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+  const [hoverTimers, setHoverTimers] = useState<
+    Record<string, NodeJS.Timeout>
+  >({});
 
   // 将传入的value转换为Set格式进行内部处理
-  const selectedValues = useMemo(() => {
-    return new Set(Array.isArray(value) ? value : value ? [value] : []);
+  const selectedValues = useMemo<Set<ValueType>>(() => {
+    return new Set<ValueType>(
+      Array.isArray(value) ? value : value ? [value] : [],
+    );
   }, [value]);
 
   const containerRef = useRef(null);
   const inputRef = useRef(null);
 
   // 根据选中的值找到对应的路径
-  const findPathByValue = (targetValue, nodes, currentPath = []) => {
+  const findPathByValue = (
+    targetValue: ValueType,
+    nodes: CascaderOption[],
+    currentPath: CascaderOption[] = [],
+  ): CascaderOption[] | null => {
     for (const node of nodes) {
       const newPath = [...currentPath, node];
 
@@ -65,10 +94,26 @@ const CascaderComponent = ({
   }, [selectedValues, options, activePath.length]);
 
   // 扁平化数据并生成路径标签（用于搜索模式）
-  const flattenOptions = useMemo(() => {
-    const flatOptions = [];
+  const flattenOptions = useMemo<
+    Array<{
+      value: ValueType;
+      label: string;
+      pathLabel: string;
+      path: string[];
+      node: CascaderOption;
+      hasChildren: boolean;
+    }>
+  >(() => {
+    const flatOptions: Array<{
+      value: ValueType;
+      label: string;
+      pathLabel: string;
+      path: string[];
+      node: CascaderOption;
+      hasChildren: boolean;
+    }> = [];
 
-    const traverse = (nodes, parentPath = []) => {
+    const traverse = (nodes: CascaderOption[], parentPath: string[] = []) => {
       nodes.forEach((node) => {
         const currentPath = [...parentPath, node.label];
         const pathLabel = currentPath.join(' - ');
@@ -108,8 +153,8 @@ const CascaderComponent = ({
   }, [flattenOptions, searchValue]);
 
   // 获取所有子节点的值
-  const getAllChildrenValues = (node) => {
-    const values = [];
+  const getAllChildrenValues = (node: CascaderOption): ValueType[] => {
+    const values: ValueType[] = [];
     if (node.children) {
       node.children.forEach((child) => {
         values.push(child.value);
@@ -120,20 +165,16 @@ const CascaderComponent = ({
   };
 
   // 检查节点是否被选中
-  const isNodeSelected = (node) => {
-    return selectedValues.has(node.value);
-  };
-
   // 修复2: 检查节点是否半选中状态 - 修复父节点全选状态检查
-  const isNodeIndeterminate = (node) => {
+  const isNodeIndeterminate = (node: CascaderOption): boolean => {
     if (!node.children) return false;
 
     // 获取所有叶子节点的值
-    const getLeafValues = (n) => {
+    const getLeafValues = (n: CascaderOption): ValueType[] => {
       if (!n.children || n.children.length === 0) {
         return [n.value];
       }
-      const leafValues = [];
+      const leafValues: ValueType[] = [];
       n.children.forEach((child) => {
         leafValues.push(...getLeafValues(child));
       });
@@ -149,18 +190,18 @@ const CascaderComponent = ({
   };
 
   // 修复2: 检查节点是否应该被全选 - 新增函数
-  const shouldNodeBeSelected = (node) => {
+  const shouldNodeBeSelected = (node: CascaderOption): boolean => {
     if (!node.children || node.children.length === 0) {
       // 叶子节点直接检查是否被选中
       return selectedValues.has(node.value);
     }
 
     // 获取所有叶子节点的值
-    const getLeafValues = (n) => {
+    const getLeafValues = (n: CascaderOption): ValueType[] => {
       if (!n.children || n.children.length === 0) {
         return [n.value];
       }
-      const leafValues = [];
+      const leafValues: ValueType[] = [];
       n.children.forEach((child) => {
         leafValues.push(...getLeafValues(child));
       });
@@ -176,7 +217,7 @@ const CascaderComponent = ({
   };
 
   // 处理节点选择
-  const handleNodeSelect = (node) => {
+  const handleNodeSelect = (node: CascaderOption): void => {
     if (!onChange) return;
 
     const newSelectedValues = new Set(selectedValues);
@@ -214,12 +255,19 @@ const CascaderComponent = ({
   };
 
   // 处理搜索结果选择
-  const handleSearchOptionSelect = (option) => {
+  const handleSearchOptionSelect = (option: {
+    value: ValueType;
+    label: string;
+    pathLabel: string;
+    path: string[];
+    node: CascaderOption;
+    hasChildren: boolean;
+  }): void => {
     handleNodeSelect(option.node);
   };
 
   // 处理路径导航（级联面板模式）
-  const handleNodeClick = (node, level) => {
+  const handleNodeClick = (node: CascaderOption, level: number): void => {
     if (node.children) {
       const newPath = activePath.slice(0, level + 1);
       newPath[level] = node;
@@ -228,7 +276,7 @@ const CascaderComponent = ({
   };
 
   // 处理鼠标悬停展开子节点
-  const handleNodeMouseEnter = (node, level) => {
+  const handleNodeMouseEnter = (node: CascaderOption, level: number): void => {
     if (!expandOnHover || disabled || !node.children) return;
 
     // 清除之前的定时器
@@ -258,7 +306,7 @@ const CascaderComponent = ({
   };
 
   // 处理鼠标离开
-  const handleNodeMouseLeave = (node, level) => {
+  const handleNodeMouseLeave = (node: CascaderOption, level: number): void => {
     if (!expandOnHover || disabled) return;
 
     const timerKey = `${level}-${node.value}`;
@@ -273,7 +321,7 @@ const CascaderComponent = ({
   };
 
   // 获取当前层级数据（级联面板模式）
-  const getCurrentLevelData = (level) => {
+  const getCurrentLevelData = (level: number): CascaderOption[] => {
     if (level === 0) {
       return options;
     }
@@ -287,7 +335,7 @@ const CascaderComponent = ({
   };
 
   // 移除选中项
-  const removeSelectedItem = (valueToRemove) => {
+  const removeSelectedItem = (valueToRemove: ValueType): void => {
     if (!onChange) return;
 
     const newSelectedValues = new Set(selectedValues);
@@ -297,7 +345,7 @@ const CascaderComponent = ({
   };
 
   // 获取已选中项的显示标签
-  const getSelectedLabels = () => {
+  const getSelectedLabels = (): Array<{ value: ValueType; label: string }> => {
     return flattenOptions
       .filter((option) => selectedValues.has(option.value))
       .map((option) => ({
@@ -307,7 +355,10 @@ const CascaderComponent = ({
   };
 
   // 渲染级联面板节点
-  const renderPanelNode = (node, level) => {
+  const renderPanelNode = (
+    node: CascaderOption,
+    level: number,
+  ): JSX.Element => {
     const isSelected = shouldNodeBeSelected(node); // 使用新的检查函数
     const isIndeterminate = isNodeIndeterminate(node) && multiple;
     const hasChildren = node.children && node.children.length > 0;
@@ -353,7 +404,7 @@ const CascaderComponent = ({
   };
 
   // 键盘导航（搜索模式）
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (!searchValue.trim()) return;
 
     switch (e.key) {
