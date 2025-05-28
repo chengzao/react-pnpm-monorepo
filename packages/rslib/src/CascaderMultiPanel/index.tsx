@@ -14,6 +14,7 @@ interface CascaderPanelProps {
   options: TreeNode[];
   value?: string[];
   onChange?: (value: string[]) => void;
+  expandTrigger?: 'hover' | 'click';
 }
 
 type CheckState = {
@@ -25,10 +26,12 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
   options,
   value = [],
   onChange,
+  expandTrigger = 'click',
 }) => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(value));
   const [activePath, setActivePath] = useState<TreeNode[]>([]);
+  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
 
   // 扁平化树数据
   const flattenTree = useMemo(() => {
@@ -44,6 +47,24 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
     flatten(options);
     return map;
   }, [options]);
+
+  const handleExpand = (node: TreeNode, level: number) => {
+    if (node.children) {
+      setActivePath((prev) => [...prev.slice(0, level), node]);
+    }
+  };
+
+  const handleHover = (node: TreeNode, level: number) => {
+    if (expandTrigger !== 'hover') return;
+
+    if (hoverTimeout) clearTimeout(hoverTimeout);
+
+    const timeout = setTimeout(() => {
+      handleExpand(node, level);
+    }, 200); // 添加200ms延迟防止误触
+
+    setHoverTimeout(timeout);
+  };
 
   useEffect(() => {
     if (value.length > 0 && flattenTree.size > 0) {
@@ -144,6 +165,40 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
     return path.join(' / ');
   };
 
+  const renderNodeItem = (node: TreeNode, level: number) => {
+    const isActive = activePath[level]?.value === node.value;
+    const eventHandlers = {
+      ...(expandTrigger === 'hover' && {
+        onMouseEnter: () => handleHover(node, level),
+      }),
+      ...(expandTrigger === 'click' && {
+        onClick: () => handleExpand(node, level),
+      }),
+    };
+
+    return (
+      <div
+        key={node.value}
+        className={`node-item
+          ${checkStates.get(node.value)?.checked ? 'checked' : ''}
+          ${isActive ? 'active-path' : ''}`}
+        {...eventHandlers}
+      >
+        <input
+          type="checkbox"
+          className={`custom-checkbox ${
+            checkStates.get(node.value)?.indeterminate ? 'indeterminate' : ''
+          }`}
+          checked={checkStates.get(node.value)?.checked}
+          onChange={() => handleSelect(node)}
+          onClick={(e) => e.stopPropagation()}
+        />
+        <span className="node-label">{node.label}</span>
+        {node.children && <span className="arrow-icon">❯</span>}
+      </div>
+    );
+  };
+
   // 渲染搜索结果
   const renderSearchResults = () => (
     <div className="search-results">
@@ -184,36 +239,7 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
         )}
       </div>
       <div className="panel-content">
-        {nodes.map((node) => {
-          const isActive = activePath[level]?.value === node.value;
-          return (
-            <div
-              key={node.value}
-              className={`node-item
-                ${checkStates.get(node.value)?.checked ? 'checked' : ''}
-                ${isActive ? 'active-path' : ''}`}
-              onClick={() => {
-                if (node.children) {
-                  setActivePath((prev) => [...prev.slice(0, level), node]);
-                }
-              }}
-            >
-              <input
-                type="checkbox"
-                className={`custom-checkbox ${
-                  checkStates.get(node.value)?.indeterminate
-                    ? 'indeterminate'
-                    : ''
-                }`}
-                checked={checkStates.get(node.value)?.checked}
-                onChange={() => handleSelect(node)}
-                onClick={(e) => e.stopPropagation()}
-              />
-              <span className="node-label">{node.label}</span>
-              {node.children && <span className="arrow-icon">❯</span>}
-            </div>
-          );
-        })}
+        {nodes.map((node) => renderNodeItem(node, level))}
       </div>
     </div>
   );
