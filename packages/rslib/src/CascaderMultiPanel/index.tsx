@@ -74,27 +74,22 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
         return {
           checked: selectedKeys.has(node.value),
           indeterminate: false,
-          hasCheckedChild: false,
         };
       }
 
       let hasChecked = false;
       let hasUnchecked = false;
-      let hasCheckedChild = false;
 
       node.children?.forEach((child) => {
         const childState = calculateState(child);
         if (childState.checked || childState.indeterminate) hasChecked = true;
         if (!childState.checked || childState.indeterminate)
           hasUnchecked = true;
-        if (childState.checked || childState.hasCheckedChild)
-          hasCheckedChild = true;
       });
 
       return {
         checked: !hasUnchecked,
         indeterminate: hasChecked && hasUnchecked,
-        hasCheckedChild,
       };
     };
 
@@ -175,44 +170,42 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
       <div className="panel-header">
         {level > 0 && (
           <div className="breadcrumb">
-            {activePath.slice(0, level).map((node, i) => {
-              const state = checkStates.get(node.value)!;
-              return (
-                <span
-                  key={node.value}
-                  className={`breadcrumb-item ${
-                    state.hasCheckedChild ? 'has-child-checked' : ''
-                  }`}
-                  onClick={() => setActivePath((prev) => prev.slice(0, i + 1))}
-                >
-                  {node.label}
-                  {i < level - 1 && <span className="separator">/</span>}
-                </span>
-              );
-            })}
+            {activePath.slice(0, level).map((node, i) => (
+              <span
+                key={node.value}
+                className={`breadcrumb-item ${i === level - 1 ? 'active' : ''}`}
+                onClick={() => setActivePath((prev) => prev.slice(0, i + 1))}
+              >
+                {node.label}
+                {i < level - 1 && <span className="separator">/</span>}
+              </span>
+            ))}
           </div>
         )}
       </div>
       <div className="panel-content">
         {nodes.map((node) => {
-          const state = checkStates.get(node.value)!;
+          const isActive = activePath[level]?.value === node.value;
           return (
             <div
               key={node.value}
               className={`node-item
-                ${state.checked ? 'checked' : ''}
-                ${state.hasCheckedChild ? 'has-child-checked' : ''}`}
-              onClick={() =>
-                node.children &&
-                setActivePath((prev) => [...prev.slice(0, level), node])
-              }
+                ${checkStates.get(node.value)?.checked ? 'checked' : ''}
+                ${isActive ? 'active-path' : ''}`}
+              onClick={() => {
+                if (node.children) {
+                  setActivePath((prev) => [...prev.slice(0, level), node]);
+                }
+              }}
             >
               <input
                 type="checkbox"
                 className={`custom-checkbox ${
-                  state.indeterminate ? 'indeterminate' : ''
+                  checkStates.get(node.value)?.indeterminate
+                    ? 'indeterminate'
+                    : ''
                 }`}
-                checked={state.checked}
+                checked={checkStates.get(node.value)?.checked}
                 onChange={() => handleSelect(node)}
                 onClick={(e) => e.stopPropagation()}
               />

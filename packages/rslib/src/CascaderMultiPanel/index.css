@@ -85,7 +85,7 @@
 }
 
 .node-item.checked {
-  background-color: #e8f4ff !important;
+  background-color: #e8f4ff;
 }
 
 .custom-checkbox {
@@ -170,12 +170,12 @@
   opacity: 0.8;
 }
 
-.node-item.has-child-checked {
-  background-color: #f0f7ff;
+.node-item.active-path {
+  background-color: #f5f7fa;
   position: relative;
 }
 
-/* .node-item.has-child-checked::after {
+.node-item.active-path::after {
   content: '';
   position: absolute;
   left: 0;
@@ -183,10 +183,11 @@
   bottom: 0;
   width: 3px;
   background-color: #409eff;
-} */
+}
 
-.breadcrumb-item.has-child-checked {
+.breadcrumb-item.active {
   background-color: #e8f3ff;
   padding: 2px 6px;
   border-radius: 4px;
+  font-weight: 500;
 }
