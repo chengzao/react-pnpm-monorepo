@@ -63,7 +63,7 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
         setActivePath(path);
       }
     }
-  }, [value, flattenTree]);
+  }, []);
 
   // 计算选择状态
   const checkStates = useMemo(() => {
