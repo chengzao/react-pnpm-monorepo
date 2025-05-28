@@ -5,7 +5,7 @@ import { originData } from './origin';
 
 function Demo() {
   // 多选模式状态
-  const [multipleValue, setMultipleValue] = useState(['a-a-a', 'a-a-b']);
+  const [multipleValue, setMultipleValue] = useState(['a-a-b']);
 
   // 单选模式状态
   const [singleValue, setSingleValue] = useState('b-a-b');

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Search, ChevronRight, X } from 'lucide-react';
 import './new.css';
 
@@ -23,6 +23,43 @@ const CascaderComponent = ({
 
   const containerRef = useRef(null);
   const inputRef = useRef(null);
+
+  // 根据选中的值找到对应的路径
+  const findPathByValue = (targetValue, nodes, currentPath = []) => {
+    for (const node of nodes) {
+      const newPath = [...currentPath, node];
+
+      if (node.value === targetValue) {
+        return newPath;
+      }
+
+      if (node.children) {
+        const foundPath = findPathByValue(targetValue, node.children, newPath);
+        if (foundPath) {
+          return foundPath;
+        }
+      }
+    }
+    return null;
+  };
+
+  // 默认展开路径：当value存在时，自动展开第一个选中项的路径
+  useEffect(() => {
+    if (
+      selectedValues.size > 0 &&
+      activePath.length === 0 &&
+      options.length > 0
+    ) {
+      // 获取第一个选中的值
+      const firstSelectedValue = Array.from(selectedValues)[0];
+      const path = findPathByValue(firstSelectedValue, options);
+
+      if (path && path.length > 1) {
+        // 设置路径，但不包含最后一个叶子节点（因为叶子节点不需要展开）
+        setActivePath(path.slice(0, -1));
+      }
+    }
+  }, [selectedValues, options, activePath.length]);
 
   // 扁平化数据并生成路径标签（用于搜索模式）
   const flattenOptions = useMemo(() => {
