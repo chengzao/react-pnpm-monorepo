@@ -55,10 +55,18 @@
   color: #409eff;
   cursor: pointer;
   transition: color 0.3s;
+  padding: 2px 0;
 }
 
 .breadcrumb-item:hover {
   color: #66b1ff;
+}
+
+.breadcrumb-item.active {
+  background-color: #e8f3ff;
+  padding: 2px 2px;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 .separator {
@@ -183,11 +191,4 @@
   bottom: 0;
   width: 3px;
   background-color: #409eff;
-}
-
-.breadcrumb-item.active {
-  background-color: #e8f3ff;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 500;
 }

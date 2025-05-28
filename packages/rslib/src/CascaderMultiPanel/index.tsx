@@ -41,7 +41,7 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
         node.parent = parent;
         node.isLeaf = !node.children?.length;
         map.set(node.value, node);
-        node.children && flatten(node.children, node);
+        flatten(node.children || [], node);
       });
     };
     flatten(options);
@@ -117,7 +117,7 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
     const traverse = (nodes: TreeNode[]) => {
       nodes.forEach((node) => {
         states.set(node.value, calculateState(node));
-        node.children && traverse(node.children);
+        traverse(node.children || []);
       });
     };
 
@@ -133,7 +133,11 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
 
     const toggleSelection = (n: TreeNode) => {
       if (n.isLeaf) {
-        shouldSelect ? newSelected.add(n.value) : newSelected.delete(n.value);
+        if (shouldSelect) {
+          newSelected.add(n.value);
+        } else {
+          newSelected.delete(n.value);
+        }
       }
       n.children?.forEach(toggleSelection);
     };
@@ -223,7 +227,7 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
   const renderPanel = (nodes: TreeNode[], level: number) => (
     <div key={level} className="cascader-panel">
       <div className="panel-header">
-        {level > 0 && (
+        {level > 0 ? (
           <div className="breadcrumb">
             {activePath.slice(0, level).map((node, i) => (
               <span
@@ -235,6 +239,10 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
                 {i < level - 1 && <span className="separator">/</span>}
               </span>
             ))}
+          </div>
+        ) : (
+          <div className="breadcrumb">
+            <span className="breadcrumb-item active">Root</span>
           </div>
         )}
       </div>
