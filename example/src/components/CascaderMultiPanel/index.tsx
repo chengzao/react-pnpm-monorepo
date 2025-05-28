@@ -4,7 +4,7 @@ import { CascaderMultiPanel } from '@learnbase/rslib';
 import { originData } from './origin';
 
 function Demo() {
-  const [value, setValue] = useState<string[]>([]);
+  const [value, setValue] = useState<string[]>(['a-a-a']);
 
   const onChange = (value: string[], options: any) => {
     console.log('onChange: ', value, options);

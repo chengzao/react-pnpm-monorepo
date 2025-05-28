@@ -1,5 +1,5 @@
 // CascaderPanel.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import './index.css';
 
 interface TreeNode {
@@ -44,6 +44,26 @@ const CascaderPanel: React.FC<CascaderPanelProps> = ({
     flatten(options);
     return map;
   }, [options]);
+
+  useEffect(() => {
+    if (value.length > 0 && flattenTree.size > 0) {
+      const firstValue = value[0];
+      const node = flattenTree.get(firstValue);
+
+      if (node) {
+        const path: TreeNode[] = [];
+        let current: TreeNode | undefined = node;
+
+        // 收集所有父节点
+        while (current?.parent) {
+          path.unshift(current.parent);
+          current = current.parent;
+        }
+
+        setActivePath(path);
+      }
+    }
+  }, [value, flattenTree]);
 
   // 计算选择状态
   const checkStates = useMemo(() => {
