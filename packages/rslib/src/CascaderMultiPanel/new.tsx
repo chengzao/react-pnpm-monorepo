@@ -23,7 +23,7 @@ interface CascaderMultiPanelProps {
   hoverDelay?: number;
 }
 
-const CascaderComponent: React.FC<CascaderMultiPanelProps> = ({
+const CascaderComponent = ({
   options = [],
   value = [],
   onChange,
@@ -34,7 +34,7 @@ const CascaderComponent: React.FC<CascaderMultiPanelProps> = ({
   searchable = true,
   expandOnHover = true,
   hoverDelay = 300,
-}) => {
+}: CascaderMultiPanelProps) => {
   const [searchValue, setSearchValue] = useState<string>('');
   const [activePath, setActivePath] = useState<CascaderOption[]>([]);
   const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);

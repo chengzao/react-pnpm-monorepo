@@ -22,12 +22,12 @@ type CheckState = {
   indeterminate: boolean;
 };
 
-const CascaderPanel: React.FC<CascaderPanelProps> = ({
+const CascaderPanel = ({
   options,
   value = [],
   onChange,
   expandTrigger = 'click',
-}) => {
+}: CascaderPanelProps) => {
   const [searchValue, setSearchValue] = useState('');
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(value));
   const [activePath, setActivePath] = useState<TreeNode[]>([]);

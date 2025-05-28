@@ -7,13 +7,13 @@ function Demo() {
   const [value, setValue] = useState<string[]>(['a-a-a']);
   const [value1, setValue1] = useState<string[]>(['a-a-b']);
 
-  const onChange = (value: string[], options: any) => {
-    console.log('onChange: ', value, options);
+  const onChange = (value: string[]) => {
+    console.log('onChange: ', value);
     setValue(value);
   };
 
-  const onChange1 = (value: string[], options: any) => {
-    console.log('onChange: ', value, options);
+  const onChange1 = (value: string[]) => {
+    console.log('onChange: ', value);
     setValue1(value);
   };
 

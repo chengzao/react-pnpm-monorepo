@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { CascaderMultiPanelNew } from '@learnbase/rslib';
 
@@ -14,17 +15,17 @@ function Demo() {
   // 禁用状态
   const [disabled, setDisabled] = useState(false);
 
-  const handleMultipleChange = (newValue) => {
+  const handleMultipleChange = (newValue: any) => {
     console.log('多选值变化:', newValue);
     setMultipleValue(newValue);
   };
 
-  const handleMultipleChange1 = (newValue) => {
+  const handleMultipleChange1 = (newValue: any) => {
     console.log('多选值变化:', newValue);
     setMultipleValue1(newValue);
   };
 
-  const handleSingleChange = (newValue) => {
+  const handleSingleChange = (newValue: any) => {
     console.log('单选值变化:', newValue);
     setSingleValue(newValue);
   };
