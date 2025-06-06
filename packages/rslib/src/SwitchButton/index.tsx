@@ -42,9 +42,10 @@ const SwitchButton = ({
       <div
         className="switchSlider"
         style={{
-          transform: `translateX(${
-            activeOption === options[0].value ? '0' : '100%'
-          })`,
+          // transform: `translateX(${
+          //   activeOption === options[0].value ? '0' : '100%'
+          // })`,
+          left: activeOption === options[0].value ? '4px' : '50%',
         }}
       />
     </div>
