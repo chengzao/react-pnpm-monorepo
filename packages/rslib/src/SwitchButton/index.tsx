@@ -9,9 +9,9 @@ const SwitchButton = () => {
   };
 
   return (
-    <div className="switch-wrapper">
+    <div className="switchWrapper">
       <div
-        className={`switch-option ${
+        className={`switchOption ${
           activeOption === 'jobSeeker' ? 'active' : ''
         }`}
         onClick={() => handleOptionChange('jobSeeker')}
@@ -20,7 +20,7 @@ const SwitchButton = () => {
       </div>
 
       <div
-        className={`switch-option ${
+        className={`switchOption ${
           activeOption === 'recruiter' ? 'active' : ''
         }`}
         onClick={() => handleOptionChange('recruiter')}
@@ -29,7 +29,7 @@ const SwitchButton = () => {
       </div>
 
       <div
-        className="switch-slider"
+        className="switchSlider"
         style={{
           transform:
             activeOption === 'jobSeeker' ? 'translateX(0)' : 'translateX(100%)',

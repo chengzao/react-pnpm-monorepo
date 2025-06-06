@@ -1,4 +1,4 @@
-.switch-wrapper {
+.switchWrapper {
   position: relative;
   display: flex;
   width: 250px;
@@ -6,25 +6,27 @@
   background-color: #f4f5f6;
   border-radius: 12px;
   overflow: hidden;
+  margin: 32px auto 0 auto;
+  padding: 0 4px;
 }
 
-.switch-option {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.switchOption {
+  width: 50%;
   font-size: 16px;
   font-weight: 600;
   color: #000;
   cursor: pointer;
   z-index: 2;
+  padding: 0 4px;
+  line-height: 42px;
+  text-align: center;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.switch-option.active {
-  color: #000;
-}
-
-.switch-slider {
+.switchSlider {
   position: absolute;
   top: 4px;
   left: 4px;
