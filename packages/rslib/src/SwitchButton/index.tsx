@@ -1,38 +1,50 @@
 import React, { useState } from 'react';
 import './index.css';
 
-const SwitchButton = () => {
-  const [activeOption, setActiveOption] = useState('jobSeeker');
+interface Option {
+  value: string;
+  label: string;
+}
 
-  const handleOptionChange = (option: string) => {
-    setActiveOption(option);
+interface SwitchButtonProps {
+  options: [Option, Option]; // 限制为两个选项
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+}
+
+const SwitchButton = ({
+  options,
+  defaultValue,
+  onChange,
+}: SwitchButtonProps) => {
+  const [activeOption, setActiveOption] = useState(
+    defaultValue || options[0].value,
+  );
+
+  const handleOptionChange = (value: string) => {
+    setActiveOption(value);
+    onChange?.(value);
   };
 
   return (
     <div className="switchWrapper">
-      <div
-        className={`switchOption ${
-          activeOption === 'jobSeeker' ? 'active' : ''
-        }`}
-        onClick={() => handleOptionChange('jobSeeker')}
-      >
-        JobSeeker
-      </div>
-
-      <div
-        className={`switchOption ${
-          activeOption === 'recruiter' ? 'active' : ''
-        }`}
-        onClick={() => handleOptionChange('recruiter')}
-      >
-        Recruiter
-      </div>
-
+      {options.map((option) => (
+        <div
+          key={option.value}
+          className={`switchOption ${
+            activeOption === option.value ? 'active' : ''
+          }`}
+          onClick={() => handleOptionChange(option.value)}
+        >
+          {option.label}
+        </div>
+      ))}
       <div
         className="switchSlider"
         style={{
-          transform:
-            activeOption === 'jobSeeker' ? 'translateX(0)' : 'translateX(100%)',
+          transform: `translateX(${
+            activeOption === options[0].value ? '0' : '100%'
+          })`,
         }}
       />
     </div>
