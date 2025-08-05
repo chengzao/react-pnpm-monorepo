@@ -29,7 +29,7 @@
   "dependencies": {
     "antd": "^5.12.2",
     "autoprefixer": "^10.4.20",
-    "less": "^3.13.1",
+    "less": "^4.0.0",
     "postcss": "^8.4.32",
     "postcss-import": "^16.1.0",
     "postcss-less": "^6.0.0"
