@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useState } from 'react';
 import { CustomSelect } from '@learnbase/rslib';
+import { Select } from 'antd';
 
 const CustomSelectExample = () => {
   const [value, setValue] = useState<any[]>([]);
@@ -33,7 +34,13 @@ const CustomSelectExample = () => {
     console.log('Selected values:', newValue);
   }, []);
 
-  return <CustomSelect value={value} onChange={handleChange} placeholder="Select Status" options={options} />;
+  return (
+    <div>
+      <CustomSelect value={value} onChange={handleChange} placeholder="Select Status" options={options} />
+
+      <Select mode="multiple" placeholder="select" options={options} maxCount={1}></Select>
+    </div>
+  );
 };
 
 export default CustomSelectExample;
