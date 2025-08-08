@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useState } from 'react';
 import { CustomSelect } from '@learnbase/rslib';
-import { Select } from 'antd';
+import { Select, Tooltip } from 'antd';
 
 const CustomSelectExample = () => {
   const [value, setValue] = useState<any[]>([]);
@@ -39,8 +39,35 @@ const CustomSelectExample = () => {
       <CustomSelect value={value} onChange={handleChange} placeholder="Select Status" options={options} />
 
       <Select mode="multiple" placeholder="select" options={options} maxCount={1}></Select>
+
+      <Tooltip title="without warning">
+        <div>without warning</div>
+      </Tooltip>
+
+      <Tooltip title="with warning">
+        <CustomTrigger />
+      </Tooltip>
+
+      <Tooltip title="without warning">
+        <div>
+          <CustomTrigger />
+        </div>
+      </Tooltip>
+
+      <Tooltip title="without warning">
+        <CustomTriggerWithRef />
+      </Tooltip>
     </div>
   );
 };
+
+const CustomTrigger = (props: any) => <div {...props}>with warning</div>;
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+const CustomTriggerWithRef = React.forwardRef<HTMLDivElement, {}>((props, ref) => (
+  <div {...props} ref={ref}>
+    with warning
+  </div>
+));
 
 export default CustomSelectExample;
