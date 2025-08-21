@@ -1,279 +1,568 @@
-// CascaderPanel.tsx
-import React, { useState, useMemo, useEffect } from 'react';
-import './index.css';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { Search, ChevronRight, X } from 'lucide-react';
+import './new.css';
 
-interface TreeNode {
-  value: string;
+type ValueType = string | number;
+
+interface CascaderOption {
+  value: ValueType;
   label: string;
-  children?: TreeNode[];
-  parent?: TreeNode;
-  isLeaf?: boolean;
+  children?: CascaderOption[];
 }
 
-interface CascaderPanelProps {
-  options: TreeNode[];
-  value?: string[];
-  onChange?: (value: string[]) => void;
-  expandTrigger?: 'hover' | 'click';
+interface CascaderMultiPanelProps {
+  options?: CascaderOption[];
+  value?: ValueType | ValueType[];
+  onChange?: (value: ValueType | ValueType[] | null) => void;
+  placeholder?: string;
+  multiple?: boolean;
+  disabled?: boolean;
+  maxTagCount?: number;
+  searchable?: boolean;
+  expandOnHover?: boolean;
+  hoverDelay?: number;
 }
 
-type CheckState = {
-  checked: boolean;
-  indeterminate: boolean;
-};
-
-const CascaderPanel = ({
-  options,
+const CascaderComponent = ({
+  options = [],
   value = [],
   onChange,
-  expandTrigger = 'click',
-}: CascaderPanelProps) => {
-  const [searchValue, setSearchValue] = useState('');
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(value));
-  const [activePath, setActivePath] = useState<TreeNode[]>([]);
-  const [hoverTimeout, setHoverTimeout] = useState<NodeJS.Timeout | null>(null);
+  placeholder = '搜索选项...',
+  multiple = true,
+  disabled = false,
+  maxTagCount = 5,
+  searchable = true,
+  expandOnHover = true,
+  hoverDelay = 300,
+}: CascaderMultiPanelProps) => {
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [activePath, setActivePath] = useState<CascaderOption[]>([]);
+  const [highlightedIndex, setHighlightedIndex] = useState<number>(-1);
+  const [hoverTimers, setHoverTimers] = useState<
+    Record<string, NodeJS.Timeout>
+  >({});
 
-  // 扁平化树数据
-  const flattenTree = useMemo(() => {
-    const map = new Map<string, TreeNode>();
-    const flatten = (nodes: TreeNode[], parent?: TreeNode) => {
-      nodes.forEach((node) => {
-        node.parent = parent;
-        node.isLeaf = !node.children?.length;
-        map.set(node.value, node);
-        flatten(node.children || [], node);
-      });
-    };
-    flatten(options);
-    return map;
-  }, [options]);
+  // 将传入的value转换为Set格式进行内部处理
+  const selectedValues = useMemo<Set<ValueType>>(() => {
+    return new Set<ValueType>(
+      Array.isArray(value) ? value : value ? [value] : [],
+    );
+  }, [value]);
 
-  const handleExpand = (node: TreeNode, level: number) => {
-    // if (node.children) {
-    // }
-    setActivePath((prev) => [...prev.slice(0, level), node]);
-  };
+  const containerRef = useRef(null);
+  const inputRef = useRef(null);
 
-  const handleHover = (node: TreeNode, level: number) => {
-    if (expandTrigger !== 'hover') return;
+  // 根据选中的值找到对应的路径
+  const findPathByValue = (
+    targetValue: ValueType,
+    nodes: CascaderOption[],
+    currentPath: CascaderOption[] = [],
+  ): CascaderOption[] | null => {
+    for (const node of nodes) {
+      const newPath = [...currentPath, node];
 
-    if (hoverTimeout) clearTimeout(hoverTimeout);
+      if (node.value === targetValue) {
+        return newPath;
+      }
 
-    const timeout = setTimeout(() => {
-      handleExpand(node, level);
-    }, 200); // 添加200ms延迟防止误触
-
-    setHoverTimeout(timeout);
-  };
-
-  useEffect(() => {
-    if (value.length > 0 && flattenTree.size > 0) {
-      const firstValue = value[0];
-      const node = flattenTree.get(firstValue);
-
-      if (node) {
-        const path: TreeNode[] = [];
-        let current: TreeNode | undefined = node;
-
-        // 收集所有父节点
-        while (current?.parent) {
-          path.unshift(current.parent);
-          current = current.parent;
+      if (node.children) {
+        const foundPath = findPathByValue(targetValue, node.children, newPath);
+        if (foundPath) {
+          return foundPath;
         }
-
-        setActivePath(path);
       }
     }
-  }, []);
+    return null;
+  };
 
-  // 计算选择状态
-  const checkStates = useMemo(() => {
-    const states = new Map<string, CheckState>();
+  // 默认展开路径：当value存在时，自动展开第一个选中项的路径
+  useEffect(() => {
+    if (
+      selectedValues.size > 0 &&
+      activePath.length === 0 &&
+      options.length > 0
+    ) {
+      // 获取第一个选中的值
+      const firstSelectedValue = Array.from(selectedValues)[0];
+      const path = findPathByValue(firstSelectedValue, options);
 
-    const calculateState = (node: TreeNode): CheckState => {
-      if (node.isLeaf) {
-        return {
-          checked: selectedKeys.has(node.value),
-          indeterminate: false,
-        };
+      if (path && path.length > 1) {
+        // 设置路径，但不包含最后一个叶子节点（因为叶子节点不需要展开）
+        setActivePath(path.slice(0, -1));
       }
+    }
+  }, [selectedValues, options, activePath.length]);
 
-      let hasChecked = false;
-      let hasUnchecked = false;
+  // 扁平化数据并生成路径标签（用于搜索模式）
+  const flattenOptions = useMemo<
+    Array<{
+      value: ValueType;
+      label: string;
+      pathLabel: string;
+      path: string[];
+      node: CascaderOption;
+      hasChildren: boolean;
+    }>
+  >(() => {
+    const flatOptions: Array<{
+      value: ValueType;
+      label: string;
+      pathLabel: string;
+      path: string[];
+      node: CascaderOption;
+      hasChildren: boolean;
+    }> = [];
 
-      node.children?.forEach((child) => {
-        const childState = calculateState(child);
-        if (childState.checked || childState.indeterminate) hasChecked = true;
-        if (!childState.checked || childState.indeterminate)
-          hasUnchecked = true;
-      });
-
-      return {
-        checked: !hasUnchecked,
-        indeterminate: hasChecked && hasUnchecked,
-      };
-    };
-
-    const traverse = (nodes: TreeNode[]) => {
+    const traverse = (nodes: CascaderOption[], parentPath: string[] = []) => {
       nodes.forEach((node) => {
-        states.set(node.value, calculateState(node));
-        traverse(node.children || []);
+        const currentPath = [...parentPath, node.label];
+        const pathLabel = currentPath.join(' - ');
+
+        flatOptions.push({
+          value: node.value,
+          label: node.label,
+          pathLabel,
+          path: currentPath,
+          node: node,
+          hasChildren: !!(node.children && node.children.length > 0),
+        });
+
+        if (node.children) {
+          traverse(node.children, currentPath);
+        }
       });
     };
 
     traverse(options);
-    return states;
-  }, [options, selectedKeys]);
+    return flatOptions;
+  }, [options]);
+
+  // 修复1: 搜索过滤选项 - 只返回叶子节点
+  const filteredOptions = useMemo(() => {
+    if (!searchValue.trim()) return [];
+
+    return flattenOptions.filter((option) => {
+      // 只返回叶子节点（没有子节点的节点）
+      const isLeaf = !option.hasChildren;
+      const matchesSearch =
+        option.pathLabel.toLowerCase().includes(searchValue.toLowerCase()) ||
+        option.label.toLowerCase().includes(searchValue.toLowerCase());
+
+      return isLeaf && matchesSearch;
+    });
+  }, [flattenOptions, searchValue]);
+
+  // 获取所有子节点的值
+  const getAllChildrenValues = (node: CascaderOption): ValueType[] => {
+    const values: ValueType[] = [];
+    if (node.children) {
+      node.children.forEach((child) => {
+        values.push(child.value);
+        values.push(...getAllChildrenValues(child));
+      });
+    }
+    return values;
+  };
+
+  // 检查节点是否被选中
+  // 修复2: 检查节点是否半选中状态 - 修复父节点全选状态检查
+  const isNodeIndeterminate = (node: CascaderOption): boolean => {
+    if (!node.children) return false;
+
+    // 获取所有叶子节点的值
+    const getLeafValues = (n: CascaderOption): ValueType[] => {
+      if (!n.children || n.children.length === 0) {
+        return [n.value];
+      }
+      const leafValues: ValueType[] = [];
+      n.children.forEach((child) => {
+        leafValues.push(...getLeafValues(child));
+      });
+      return leafValues;
+    };
+
+    const leafValues = getLeafValues(node);
+    const selectedLeafCount = leafValues.filter((value) =>
+      selectedValues.has(value),
+    ).length;
+
+    return selectedLeafCount > 0 && selectedLeafCount < leafValues.length;
+  };
+
+  // 修复2: 检查节点是否应该被全选 - 新增函数
+  const shouldNodeBeSelected = (node: CascaderOption): boolean => {
+    if (!node.children || node.children.length === 0) {
+      // 叶子节点直接检查是否被选中
+      return selectedValues.has(node.value);
+    }
+
+    // 获取所有叶子节点的值
+    const getLeafValues = (n: CascaderOption): ValueType[] => {
+      if (!n.children || n.children.length === 0) {
+        return [n.value];
+      }
+      const leafValues: ValueType[] = [];
+      n.children.forEach((child) => {
+        leafValues.push(...getLeafValues(child));
+      });
+      return leafValues;
+    };
+
+    const leafValues = getLeafValues(node);
+    // 只有当所有叶子节点都被选中时，父节点才应该显示为选中状态
+    return (
+      leafValues.length > 0 &&
+      leafValues.every((value) => selectedValues.has(value))
+    );
+  };
 
   // 处理节点选择
-  const handleSelect = (node: TreeNode) => {
-    const newSelected = new Set(selectedKeys);
-    const state = checkStates.get(node.value)!;
-    const shouldSelect = !state.checked;
+  const handleNodeSelect = (node: CascaderOption): void => {
+    if (!onChange) return;
 
-    const toggleSelection = (n: TreeNode) => {
-      if (n.isLeaf) {
-        if (shouldSelect) {
-          newSelected.add(n.value);
-        } else {
-          newSelected.delete(n.value);
-        }
+    const newSelectedValues = new Set(selectedValues);
+
+    if (node.children && multiple) {
+      // 非叶子节点：选中/取消选中所有子节点
+      const childrenValues = getAllChildrenValues(node);
+      const isCurrentSelected = shouldNodeBeSelected(node); // 使用新的检查函数
+
+      if (isCurrentSelected) {
+        newSelectedValues.delete(node.value);
+        childrenValues.forEach((value) => newSelectedValues.delete(value));
+      } else {
+        newSelectedValues.add(node.value);
+        childrenValues.forEach((value) => newSelectedValues.add(value));
       }
-      n.children?.forEach(toggleSelection);
-    };
-
-    toggleSelection(node);
-    setSelectedKeys(newSelected);
-    onChange?.(Array.from(newSelected));
-  };
-
-  // 搜索功能
-  const searchResults = useMemo(() => {
-    if (!searchValue.trim()) return [];
-    const lowerSearch = searchValue.toLowerCase();
-
-    return Array.from(flattenTree.values()).filter((node) => {
-      const isMatch = node.label.toLowerCase().includes(lowerSearch);
-      return isMatch && (!node.children?.length || node.isLeaf);
-    });
-  }, [searchValue, flattenTree]);
-
-  // 获取节点路径
-  const getNodePath = (node: TreeNode) => {
-    const path = [];
-    let current = node;
-    while (current.parent) {
-      path.unshift(current.parent.label);
-      current = current.parent;
+    } else {
+      // 叶子节点或单选模式
+      if (multiple) {
+        if (selectedValues.has(node.value)) {
+          newSelectedValues.delete(node.value);
+        } else {
+          newSelectedValues.add(node.value);
+        }
+      } else {
+        // 单选模式：清空其他选项，只保留当前选项
+        newSelectedValues.clear();
+        newSelectedValues.add(node.value);
+      }
     }
-    return path.join(' / ');
+
+    // 将Set转换为数组格式传给onChange
+    const newValue = Array.from(newSelectedValues);
+    onChange(multiple ? newValue : newValue.length > 0 ? newValue[0] : null);
   };
 
-  const renderNodeItem = (node: TreeNode, level: number) => {
-    const isActive = activePath[level]?.value === node.value;
-    const eventHandlers = {
-      ...(expandTrigger === 'hover' && {
-        onMouseEnter: () => handleHover(node, level),
-      }),
-      ...(expandTrigger === 'click' && {
-        onClick: () => handleExpand(node, level),
-      }),
-    };
+  // 处理搜索结果选择
+  const handleSearchOptionSelect = (option: {
+    value: ValueType;
+    label: string;
+    pathLabel: string;
+    path: string[];
+    node: CascaderOption;
+    hasChildren: boolean;
+  }): void => {
+    handleNodeSelect(option.node);
+  };
+
+  // 处理路径导航（级联面板模式）
+  const handleNodeClick = (node: CascaderOption, level: number): void => {
+    if (!node.children) return;
+    const newPath = activePath.slice(0, level + 1);
+    newPath[level] = node;
+    setActivePath(newPath);
+  };
+
+  // 处理鼠标悬停展开子节点
+  const handleNodeMouseEnter = (node: CascaderOption, level: number): void => {
+    if (!expandOnHover || disabled || !node.children) return;
+
+    // 清除之前的定时器
+    const timerKey = `${level}-${node.value}`;
+    if (hoverTimers[timerKey]) {
+      clearTimeout(hoverTimers[timerKey]);
+    }
+
+    // 设置新的定时器
+    const timer = setTimeout(() => {
+      const newPath = activePath.slice(0, level + 1);
+      newPath[level] = node;
+      setActivePath(newPath);
+
+      // 清理定时器引用
+      setHoverTimers((prev) => {
+        const newTimers = { ...prev };
+        delete newTimers[timerKey];
+        return newTimers;
+      });
+    }, hoverDelay);
+
+    setHoverTimers((prev) => ({
+      ...prev,
+      [timerKey]: timer,
+    }));
+  };
+
+  // 处理鼠标离开
+  const handleNodeMouseLeave = (node: CascaderOption, level: number): void => {
+    if (!expandOnHover || disabled) return;
+
+    const timerKey = `${level}-${node.value}`;
+    if (hoverTimers[timerKey]) {
+      clearTimeout(hoverTimers[timerKey]);
+      setHoverTimers((prev) => {
+        const newTimers = { ...prev };
+        delete newTimers[timerKey];
+        return newTimers;
+      });
+    }
+  };
+
+  // 获取当前层级数据（级联面板模式）
+  const getCurrentLevelData = (level: number): CascaderOption[] => {
+    if (level === 0) {
+      return options;
+    }
+
+    const parentNode = activePath[level - 1];
+    if (parentNode && parentNode.children) {
+      return parentNode.children;
+    }
+
+    return [];
+  };
+
+  // 移除选中项
+  const removeSelectedItem = (valueToRemove: ValueType): void => {
+    if (!onChange) return;
+
+    const newSelectedValues = new Set(selectedValues);
+    newSelectedValues.delete(valueToRemove);
+    const newValue = Array.from(newSelectedValues);
+    onChange(multiple ? newValue : newValue.length > 0 ? newValue[0] : null);
+  };
+
+  // 获取已选中项的显示标签
+  const getSelectedLabels = (): Array<{ value: ValueType; label: string }> => {
+    return flattenOptions
+      .filter((option) => selectedValues.has(option.value))
+      .map((option) => ({
+        value: option.value,
+        label: option.pathLabel,
+      }));
+  };
+
+  // 渲染级联面板节点
+  const renderPanelNode = (
+    node: CascaderOption,
+    level: number,
+  ): JSX.Element => {
+    const isSelected = shouldNodeBeSelected(node); // 使用新的检查函数
+    const isIndeterminate = isNodeIndeterminate(node) && multiple;
+    const hasChildren = node.children && node.children.length > 0;
+
+    // 单选模式下，只有叶子节点显示radio按钮
+    const showRadio = !multiple && !hasChildren;
+    // 多选模式下显示checkbox，单选模式下非叶子节点不显示选择控件
+    const showCheckbox = multiple;
 
     return (
       <div
         key={node.value}
-        className={`node-item
-          ${checkStates.get(node.value)?.checked ? 'checked' : ''}
-          ${isActive ? 'active-path' : ''}`}
-        {...eventHandlers}
+        className={`cascade-node ${
+          activePath[level]?.value === node.value ? 'active' : ''
+        }`}
+        onClick={() => !disabled && handleNodeClick(node, level)}
+        onMouseEnter={() => handleNodeMouseEnter(node, level)}
+        onMouseLeave={() => handleNodeMouseLeave(node, level)}
       >
-        <input
-          type="checkbox"
-          className={`custom-checkbox ${
-            checkStates.get(node.value)?.indeterminate ? 'indeterminate' : ''
-          }`}
-          checked={checkStates.get(node.value)?.checked}
-          onChange={() => handleSelect(node)}
-          onClick={(e) => e.stopPropagation()}
-        />
-        <span className="node-label">{node.label}</span>
-        {node.children && <span className="arrow-icon">❯</span>}
+        {(showCheckbox || showRadio) && (
+          <div>
+            <input
+              type={multiple ? 'checkbox' : 'radio'}
+              checked={isSelected}
+              disabled={disabled}
+              ref={(input) => {
+                if (input && multiple) input.indeterminate = isIndeterminate;
+              }}
+              onChange={(e) => {
+                e.stopPropagation();
+                if (!disabled) handleNodeSelect(node);
+              }}
+              className="cascade-node-checkbox"
+            />
+          </div>
+        )}
+
+        <span className="cascade-node-label">{node.label}</span>
+
+        {hasChildren && <ChevronRight className="cascade-node-arrow" />}
       </div>
     );
   };
 
-  // 渲染搜索结果
-  const renderSearchResults = () => (
-    <div className="search-results">
-      {searchResults.map((node) => (
-        <div key={node.value} className="search-result-item">
-          <input
-            type="checkbox"
-            className="custom-checkbox"
-            checked={selectedKeys.has(node.value)}
-            onChange={() => handleSelect(node)}
-          />
-          <span className="node-label">
-            {node.label}
-            <span className="node-path">{getNodePath(node)}</span>
-          </span>
-        </div>
-      ))}
-    </div>
-  );
+  // 键盘导航（搜索模式）
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (!searchValue.trim()) return;
 
-  // 渲染级联面板
-  const renderPanel = (nodes: TreeNode[], level: number) => (
-    <div key={level} className="cascader-panel">
-      <div className="panel-header">
-        {level > 0 ? (
-          <div className="breadcrumb">
-            {activePath.slice(0, level).map((node, i) => (
-              <span
-                key={node.value}
-                className={`breadcrumb-item ${i === level - 1 ? 'active' : ''}`}
-                onClick={() => setActivePath((prev) => prev.slice(0, i + 1))}
-              >
-                {node.label}
-                {i < level - 1 && <span className="separator">/</span>}
-              </span>
-            ))}
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < filteredOptions.length - 1 ? prev + 1 : 0,
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev > 0 ? prev - 1 : filteredOptions.length - 1,
+        );
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
+          handleSearchOptionSelect(filteredOptions[highlightedIndex]);
+        }
+        break;
+      case 'Escape':
+        setSearchValue('');
+        setHighlightedIndex(-1);
+        break;
+    }
+  };
+
+  const selectedLabels = getSelectedLabels();
+  const isSearchMode = searchValue.trim().length > 0;
+
+  // 组件卸载时清理所有定时器
+  useEffect(() => {
+    return () => {
+      Object.values(hoverTimers).forEach((timer) => {
+        if (timer) clearTimeout(timer);
+      });
+    };
+  }, [hoverTimers]);
+
+  return (
+    <div
+      className={`cascader-container ${disabled ? 'disabled' : ''}`}
+      ref={containerRef}
+    >
+      {/* 搜索框和已选标签 */}
+      <div className="cascader-header">
+        {/* 已选择的标签 */}
+        {selectedLabels.length > 0 && multiple && (
+          <div className="selected-tags-container">
+            <div className="selected-tags-title">
+              已选择 {selectedLabels.length} 项:
+            </div>
+            <div className="selected-tags-wrapper">
+              {selectedLabels.slice(0, maxTagCount).map((item) => (
+                <span key={item.value} className="selected-tag">
+                  <span className="selected-tag-text">{item.label}</span>
+                  {!disabled && (
+                    <X
+                      className="selected-tag-close"
+                      onClick={() => removeSelectedItem(item.value)}
+                    />
+                  )}
+                </span>
+              ))}
+              {selectedLabels.length > maxTagCount && (
+                <span className="selected-tag-more">
+                  +{selectedLabels.length - maxTagCount} 更多...
+                </span>
+              )}
+            </div>
           </div>
-        ) : (
-          <div className="breadcrumb">
-            <span className="breadcrumb-item active">Root</span>
+        )}
+
+        {/* 搜索输入框 */}
+        {searchable && (
+          <div className="search-container">
+            <Search className="search-icon" />
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder={placeholder}
+              value={searchValue}
+              disabled={disabled}
+              onChange={(e) => {
+                setSearchValue(e.target.value);
+                setHighlightedIndex(-1);
+              }}
+              onKeyDown={handleKeyDown}
+              className="search-input"
+            />
           </div>
         )}
       </div>
-      <div className="panel-content">
-        {nodes.map((node) => renderNodeItem(node, level))}
-      </div>
-    </div>
-  );
 
-  return (
-    <div className="cascader-container">
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchValue}
-          onChange={(e) => setSearchValue(e.target.value)}
-          className="search-input"
-        />
-      </div>
+      {/* 内容区域 */}
+      <div className="content-container">
+        {isSearchMode && searchable ? (
+          /* 搜索下拉模式 */
+          <div className="search-dropdown">
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((option, index) => {
+                const isSelected = selectedValues.has(option.value);
+                const isHighlighted = index === highlightedIndex;
 
-      {searchValue ? (
-        renderSearchResults()
-      ) : (
-        <div className="panels-container">
-          {renderPanel(options, 0)}
-          {activePath.map((node, i) => renderPanel(node.children || [], i + 1))}
-        </div>
-      )}
+                return (
+                  <div
+                    key={option.value}
+                    className={`search-option ${
+                      isHighlighted ? 'highlighted' : ''
+                    } ${isSelected ? 'selected' : ''}`}
+                    onClick={() =>
+                      !disabled && handleSearchOptionSelect(option)
+                    }
+                  >
+                    <input
+                      type={multiple ? 'checkbox' : 'radio'}
+                      checked={isSelected}
+                      disabled={disabled}
+                      onChange={() => {}}
+                      className="search-option-checkbox"
+                    />
+
+                    <span
+                      className={`search-option-text ${
+                        isSelected ? 'selected' : ''
+                      }`}
+                    >
+                      {option.pathLabel}
+                    </span>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="no-results">无匹配结果</div>
+            )}
+          </div>
+        ) : (
+          /* 级联面板模式 */
+          <div className="cascade-panels">
+            {Array.from(
+              { length: Math.max(1, activePath.length + 1) },
+              (_, level) => {
+                const levelData = getCurrentLevelData(level);
+
+                return (
+                  <div key={level} className="cascade-panel">
+                    {levelData.length > 0
+                      ? levelData.map((node) => renderPanelNode(node, level))
+                      : null}
+                  </div>
+                );
+              },
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default CascaderPanel;
+export default CascaderComponent;
