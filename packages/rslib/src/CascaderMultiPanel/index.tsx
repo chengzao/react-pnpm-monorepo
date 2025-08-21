@@ -105,22 +105,26 @@ const CascaderComponent = ({
     onChange(multiple ? arr : arr.length > 0 ? arr[0] : null);
   };
 
+  // helper: 在指定 level 更新 activePath，保证没有空洞并修剪长度
+  const updateActivePathAt = (node: CascaderOption, level: number) => {
+    setActivePath((prev) => {
+      const next = [...prev.slice(0, level), node];
+      return next;
+    });
+  };
+
   const handleNodeClick = (node: CascaderOption, level: number) => {
-    if (!node.children) return;
-    const path = activePath.slice(0, level + 1);
-    path[level] = node;
-    setActivePath(path);
+    // 无论是否有 children，都更新该层级的 activePath（叶子也高亮）
+    updateActivePathAt(node, level);
   };
 
   // hover 展开
   const handleNodeMouseEnter = (node: CascaderOption, level: number) => {
-    if (!expandOnHover || disabled || !node.children) return;
+    if (!expandOnHover || disabled) return;
     const key = `${level}-${node.value}`;
     if (hoverTimers[key]) clearTimeout(hoverTimers[key]);
     const timer = setTimeout(() => {
-      const path = activePath.slice(0, level + 1);
-      path[level] = node;
-      setActivePath(path);
+      updateActivePathAt(node, level);
       setHoverTimers((p) => {
         const n = { ...p };
         delete n[key];
@@ -241,6 +245,9 @@ const CascaderComponent = ({
                   level === 0
                     ? options
                     : (activePath[level - 1]?.children ?? []);
+
+                if (!levelData || !levelData?.length) return null;
+
                 return (
                   <PanelColumn
                     key={level}
