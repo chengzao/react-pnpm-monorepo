@@ -268,16 +268,14 @@ const CascaderComponent = ({
 
   // 处理路径导航（级联面板模式）
   const handleNodeClick = (node: CascaderOption, level: number): void => {
-    if (node.children) {
-      const newPath = activePath.slice(0, level + 1);
-      newPath[level] = node;
-      setActivePath(newPath);
-    }
+    const newPath = activePath.slice(0, level + 1);
+    newPath[level] = node;
+    setActivePath(newPath);
   };
 
   // 处理鼠标悬停展开子节点
   const handleNodeMouseEnter = (node: CascaderOption, level: number): void => {
-    if (!expandOnHover || disabled || !node.children) return;
+    if (!expandOnHover || disabled) return;
 
     // 清除之前的定时器
     const timerKey = `${level}-${node.value}`;
@@ -552,11 +550,9 @@ const CascaderComponent = ({
 
                 return (
                   <div key={level} className="cascade-panel">
-                    {levelData.length > 0 ? (
-                      levelData.map((node) => renderPanelNode(node, level))
-                    ) : (
-                      <div className="empty-panel">暂无数据</div>
-                    )}
+                    {levelData.length > 0
+                      ? levelData.map((node) => renderPanelNode(node, level))
+                      : null}
                   </div>
                 );
               },

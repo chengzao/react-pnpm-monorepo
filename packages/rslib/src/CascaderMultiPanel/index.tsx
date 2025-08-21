@@ -49,9 +49,9 @@ const CascaderPanel = ({
   }, [options]);
 
   const handleExpand = (node: TreeNode, level: number) => {
-    if (node.children) {
-      setActivePath((prev) => [...prev.slice(0, level), node]);
-    }
+    // if (node.children) {
+    // }
+    setActivePath((prev) => [...prev.slice(0, level), node]);
   };
 
   const handleHover = (node: TreeNode, level: number) => {
