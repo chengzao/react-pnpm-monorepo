@@ -7,9 +7,7 @@ export function setVscodeSettingsJson(json: any = {}) {
   set(json, 'scss\\.validate', false);
 
   // 添加 stylelint.validate
-  const stylelintValidates = new Set(
-    get(json, 'stylelint\\.validate', { default: [] }) as string[],
-  );
+  const stylelintValidates = new Set(get(json, 'stylelint\\.validate', { default: [] }) as string[]);
   stylelintValidates.add('css');
   stylelintValidates.add('scss');
   stylelintValidates.add('less');

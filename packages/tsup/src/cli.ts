@@ -22,6 +22,4 @@ if (isExisted) {
 setVscodeSettingsJson(json);
 fs.writeFileSync(vscodeSettingsFilename, jsonc.stringify(json, undefined, 2), 'utf8');
 
-console.info(
-  `[@learnbase/stylelint] ${isExisted ? 'update' : 'init'} '.vscode/settings.json' finished`,
-);
+console.info(`[@learnbase/stylelint] ${isExisted ? 'update' : 'init'} '.vscode/settings.json' finished`);
