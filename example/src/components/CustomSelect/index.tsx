@@ -40,7 +40,7 @@ const CustomSelectExample = () => {
 
       <Select mode="multiple" placeholder="select" options={options} maxCount={1}></Select>
 
-      <Tooltip title="without warning">
+      {/* <Tooltip title="without warning">
         <div>without warning</div>
       </Tooltip>
 
@@ -56,18 +56,18 @@ const CustomSelectExample = () => {
 
       <Tooltip title="without warning">
         <CustomTriggerWithRef />
-      </Tooltip>
+      </Tooltip> */}
     </div>
   );
 };
 
-const CustomTrigger = (props: any) => <div {...props}>with warning</div>;
+// const CustomTrigger = (props: any) => <div {...props}>with warning</div>;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const CustomTriggerWithRef = React.forwardRef<HTMLDivElement, {}>((props, ref) => (
-  <div {...props} ref={ref}>
-    with warning
-  </div>
-));
+// // eslint-disable-next-line @typescript-eslint/ban-types
+// const CustomTriggerWithRef = React.forwardRef<HTMLDivElement, {}>((props, ref) => (
+//   <div {...props} ref={ref}>
+//     with warning
+//   </div>
+// ));
 
 export default CustomSelectExample;

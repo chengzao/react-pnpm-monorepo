@@ -171,7 +171,9 @@ const CustomSelect = ({
 
   return (
     <Dropdown trigger={['click']} popupRender={dropdownRender}>
-      <div className="dropdown-button">
+      <div
+        className={`dropdown-button ${hasSelection ? 'dropdown-label-hasValue' : ''}`}
+      >
         {hasSelection ? (
           <>
             <span className="dropdown-label-tag">

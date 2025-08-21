@@ -64,8 +64,6 @@
 
 .dropdown-arrow {
   margin-inline-start: 8px;
-  width: 14px;
-  height: 14px;
   overflow: hidden;
   position: relative;
 }
@@ -73,18 +71,12 @@
 .dropdown-arrow-icon {
   display: flex;
   align-items: center;
-  position: absolute;
-  inset: 0;
   background-color: #fff;
 }
 
 .dropdown-arrow-clear {
-  display: flex;
+  display: none;
   align-items: center;
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  z-index: -1;
   background-color: #fff;
   color: rgba(0, 0, 0, 0.25);
 }
@@ -97,10 +89,15 @@
   border: 1px solid rgba(28, 112, 238, 0.5);
   box-shadow: 0px 0px 0px 2px rgba(0, 102, 255, 0.1);
   backdrop-filter: blur(3px);
+}
+
+.dropdown-label-hasValue:hover {
+  .dropdown-arrow-icon {
+    display: none;
+  }
 
   .dropdown-arrow-clear {
-    opacity: 1;
-    z-index: 1;
+    display: flex;
   }
 }
 
