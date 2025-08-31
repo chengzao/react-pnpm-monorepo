@@ -33,7 +33,7 @@
     "gulp-less": "^4.0.1",
     "less": "^3.13.1",
     "rimraf": "^3.0.2",
-    "through2": "^3.0.2"
+    "through2": "^4.0.0"
   },
   "peerDependencies": {
     "react": ">=16.8.0",
