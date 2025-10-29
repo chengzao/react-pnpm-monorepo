@@ -1,0 +1,110 @@
+/* styles/update-checker.css */
+.update-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-left: 4px solid #1890ff;
+  max-width: 400px;
+  animation: slideIn 0.3s ease-out;
+}
+
+.update-notification__content {
+  padding: 16px;
+}
+
+.update-notification h3 {
+  margin: 0 0 8px 0;
+  color: #1890ff;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.update-notification p {
+  margin: 0 0 16px 0;
+  color: #666;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.update-notification__error {
+  color: #ff4d4f;
+  font-size: 12px;
+  margin-bottom: 12px;
+  padding: 4px 8px;
+  background: #fff2f0;
+  border-radius: 4px;
+  border: 1px solid #ffccc7;
+}
+
+.update-notification__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.update-notification__button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.update-notification__button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.update-notification__button--primary {
+  background: #1890ff;
+  color: white;
+}
+
+.update-notification__button--primary:hover:not(:disabled) {
+  background: #40a9ff;
+}
+
+.update-notification__button--secondary {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #d9d9d9;
+}
+
+.update-notification__button--secondary:hover:not(:disabled) {
+  background: #e6f7ff;
+  color: #1890ff;
+  border-color: #1890ff;
+}
+
+.update-notification__meta {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #999;
+  text-align: right;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .update-notification {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+  }
+}
