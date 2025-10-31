@@ -41,7 +41,7 @@
   "dependencies": {
     "antd": "^5.12.2",
     "dayjs": "^1.11.13",
-    "lucide-react": "^0.511.0",
+    "lucide-react": "^0.552.0",
     "resize-observer-polyfill": "^1.5.1"
   }
 }
