@@ -4,7 +4,6 @@
   "engines": {
     "node": ">=18.18.2"
   },
-  "packageManager": "pnpm@8.12.1",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "prepare": "husky install && dumi setup",
