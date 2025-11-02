@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 export default [
   // 忽略构建目录
   {
-    ignores: ['**/dist/**', '**/lib/**', '**/es/**', '**/node_modules/**', '**/.next/**', '**/build/**'],
+    ignores: ['**/dist/**', '**/lib/**', '**/es/**', '**/node_modules/**', '**/.next/**', '**/build/**', '**/*.md', 'tsconfig.node.json'],
   },
 
   // 基础配置（相对宽松）
@@ -26,7 +26,7 @@ export default [
       'no-console': 'off',
       'no-debugger': 'error',
       eqeqeq: 'error',
-      curly: 'error',
+      curly: ['error', 'multi-line'],
       'no-eval': 'error',
     },
   },

@@ -180,8 +180,9 @@ const CascaderComponent = ({
         break;
       case 'Enter':
         e.preventDefault();
-        if (highlightedIndex >= 0 && filteredOptions[highlightedIndex])
+        if (highlightedIndex >= 0 && filteredOptions[highlightedIndex]) {
           handleNodeSelect(filteredOptions[highlightedIndex].node);
+        }
         break;
       case 'Escape':
         setSearchValue('');

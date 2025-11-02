@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "npm run clean && npm run build:types && gulp",
-    "build:types": "tsc -p tsconfig.build.json && cpr lib esm",
+    "build:types": "tsc -p tsconfig.build.json && rimraf esm && mkdir -p esm && cp -R lib/. esm",
     "clean": "rimraf lib esm dist",
     "prepublishOnly": "npm run build"
   },

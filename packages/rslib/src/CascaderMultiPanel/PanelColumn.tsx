@@ -56,8 +56,9 @@ const PanelColumn: React.FC<Props> = ({
                   checked={isSelected}
                   disabled={disabled}
                   ref={(input) => {
-                    if (input && multiple)
+                    if (input && multiple) {
                       input.indeterminate = isIndeterminate;
+                    }
                   }}
                   onChange={(e) => {
                     e.stopPropagation();

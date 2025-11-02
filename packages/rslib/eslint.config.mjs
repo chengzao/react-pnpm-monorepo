@@ -4,6 +4,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import { fileURLToPath } from 'node:url';
 
 export default [
   // 忽略构建目录
@@ -16,6 +17,7 @@ export default [
       '**/.next/**',
       '**/build/**',
       '**/pnpm-lock.yaml',
+      '**/*.md',
     ],
   },
 
@@ -36,7 +38,7 @@ export default [
       'no-console': 'off',
       'no-debugger': 'off',
       eqeqeq: 'error',
-      curly: 'error',
+      curly: ['error', 'multi-line'],
       'no-eval': 'error',
     },
   },
@@ -49,6 +51,7 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
+        tsconfigRootDir: fileURLToPath(new URL('.', import.meta.url)),
       },
     },
     plugins: {
