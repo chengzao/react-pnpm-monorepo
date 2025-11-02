@@ -123,7 +123,4 @@ dist
 .pnp.*
 .pnpm-store
 
-.dumi/tmp
-website/.dumi/tmp
-.dumi/tmp-production
 .DS_Store
