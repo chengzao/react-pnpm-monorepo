@@ -105,5 +105,5 @@ pnpm mode:release
 - 使用 pnpm 作为包管理器。
 - 使用 husky 和 lint-staged 进行代码风格检查和格式化。
 - 使用 commitizen 进行规范化的 commit message。
-
+- Git commit 信息使用英语。
 - 各个包使用 father、vite、gulp、rslib 或 tsup 等工具进行构建。
