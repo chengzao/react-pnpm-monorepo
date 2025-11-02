@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import './new.css';
+import './index.css';
 import { Search } from 'lucide-react';
 import PanelColumn from './PanelColumn';
 import SearchDropdown from './SearchDropdown';

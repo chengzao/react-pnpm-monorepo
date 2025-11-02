@@ -13,5 +13,5 @@ export default defineConfig({
       },
     ],
   ],
-  plugins: ['./plugin/loader-less-plugin.ts'],
+  plugins: ['./plugin/loader-less-plugin.js'],
 });

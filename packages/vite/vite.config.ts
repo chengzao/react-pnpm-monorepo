@@ -17,7 +17,7 @@ export default defineConfig({
   ],
   build: {
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'react/jsx-runtime'],
       input: Object.fromEntries(
         fastGlob
           .sync('src/**/*.{ts,tsx}')

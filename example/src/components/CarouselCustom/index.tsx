@@ -1,8 +1,8 @@
-import React from 'react';
+import type { CSSProperties } from 'react';
 
 import { CarouselCustom } from '@learnbase/rslib';
 
-const contentStyle: React.CSSProperties = {
+const contentStyle: CSSProperties = {
   margin: 0,
   height: '160px',
   color: '#fff',

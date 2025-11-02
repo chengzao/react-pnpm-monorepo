@@ -1,10 +1,10 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { CascaderSearchSingle } from '@learnbase/rslib';
 
 import { originData } from './origin';
 
 const Demo = () => {
-  const [value, setValue] = React.useState<string[]>([]);
+  const [value, setValue] = useState<string[]>([]);
 
   const onSelect = (value: string[], option: any) => {
     console.log('onSelect: ', value, option);

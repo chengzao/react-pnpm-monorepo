@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import {  useCallback, useState  } from 'react';
 import { CustomSelect } from '@learnbase/rslib';
-import { Select, Tooltip } from 'antd';
+import { Select } from 'antd';
 
 const CustomSelectExample = () => {
   const [value, setValue] = useState<any[]>([]);

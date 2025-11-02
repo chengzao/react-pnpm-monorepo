@@ -11,12 +11,14 @@
     "target": "ES6",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "lib": ["esnext", "dom"],
+    "lib": ["ESNext", "DOM"],
     "useDefineForClassFields": true,
     "forceConsistentCasingInFileNames": true,
     "allowJs": true,
     "checkJs": true,
-    "baseUrl": "./"
+    "baseUrl": "./",
+    "jsx": "react-jsx",
+    "types": ["react", "react-dom"]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

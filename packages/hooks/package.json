@@ -27,6 +27,8 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.23.6",
-    "father": "^4.3.7"
+    "father": "^4.3.7",
+    "@types/react": "^18.3.21",
+    "@types/react-dom": "^18.3.7"
   }
 }

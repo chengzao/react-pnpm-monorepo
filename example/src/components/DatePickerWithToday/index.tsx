@@ -1,4 +1,3 @@
-import React from 'react';
 import { ConfigProvider, Row, Col } from 'antd';
 import zhCN from 'antd/es/locale/zh_CN';
 import { DatePickerWithToday } from '@learnbase/rslib';
