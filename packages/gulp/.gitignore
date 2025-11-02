@@ -19,12 +19,6 @@
 /doc-site
 /types
 
-# dumi
-.dumi/tmp
-.dumi/tmp-test
-.dumi/tmp-production
-.umi
-.umi-production
 .env.local
 
 # misc
