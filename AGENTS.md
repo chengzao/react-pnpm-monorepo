@@ -6,7 +6,6 @@
 
 - **单包开发**: 每个包内的 `dev` 命令只能在对应包目录内运行（不能从根目录运行）
 - **强制包管理**: `preinstall` 脚本强制使用 pnpm，使用 npm/yarn 会失败
-- **文档服务**: `doc:dev` 启动 dumi 文档开发服务器，自动从组件生成文档
 
 ## 关键构建差异
 
@@ -20,12 +19,6 @@
 - **vitest 包**: 独立测试环境，使用 `@vitest/browser` 和 playwright
 - **单包测试**: 通过各包的 `test` 脚本运行，不是从根目录统一运行
 - **tsup 包**: 测试文件在 `test` 目录，不是 `__tests__`
-
-## 文档系统 (dumi)
-
-- **组件文档**: 自动从 `packages/*/src` 提取组件生成文档
-- **别名映射**: `.dumirc.ts` 定义了 `@learnbase/ui/vite-pack/hooks` 别名
-- **文档构建**: `doc:build` 输出到 `docs-dist` 目录
 
 ## 包结构和导出模式
 
