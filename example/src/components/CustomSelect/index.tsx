@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useCallback, useState } from 'react';
 import { CustomSelect } from '@learnbase/rslib';
 import { Select, Tooltip } from 'antd';
