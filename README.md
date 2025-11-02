@@ -2,6 +2,43 @@ Base monorepo
 
 > pnpm workspace + changeset
 
+## 同步更新说明（2025-11）
+
+- 根级 ESLint/Prettier 清理与策略变更
+  - 已移除根级 lint-staged 配置与相关依赖，参见 [json.devDependencies()](package.json:39) 与此前的 [json.lint-staged()](package.json:25)
+  - 已删除根级 [.prettierrc.js](.prettierrc.js:1) 与 [.prettierignore](.prettierignore:1)
+  - 清理 [.npmrc](.npmrc:4) 未知项目键：enable-pre-post-scripts / auto-install-peers，避免 npm warn
+
+- Husky 钩子调整
+  - [sh.pre-commit](.husky/pre-commit:1) 改为直通（pass-through），不再在根级运行 lint-staged
+  - [sh.commit-msg](.husky/commit-msg:1) 使用 pnpm 执行 commitlint：pnpm exec commitlint --edit "$1"
+
+- 子包 ESLint（Flat Config）示例
+  - 示例包新增 [js.eslint.config()](example/eslint.config.mjs:1)，启用 TS/React/Hooks/Refresh，放宽部分严格类型规则以适配现有代码
+  - 在示例包执行校验：[json.scripts.lint()](example/package.json:9)
+
+- React 依赖策略统一
+  - 库包以 peerDependencies 声明宿主依赖版本，避免将运行时框架打入产物
+  - [json.peerDependencies()](packages/rslib/package.json:34)：react >=18, react-dom >=18；开发期类型依赖使用 [json.devDependencies.@types-react](packages/rslib/package.json:26) 与 [json.devDependencies.@types-react-dom](packages/rslib/package.json:27)
+  - [json.peerDependencies()](packages/ui/package.json:40)：react >=18, react-dom >=18；开发期类型依赖使用 [json.devDependencies.@types-react](packages/ui/package.json:27) 与 [json.devDependencies.@types-react-dom](packages/ui/package.json:27)
+
+- 构建提示
+  - rslib 构建已验证通过，见 [json.scripts.build()](packages/rslib/package.json:16)
+  - ui 构建失败与 React 依赖无关，源于 Father 插件 API 变化（[ts.loader-less-plugin.ts()](packages/ui/plugin/loader-less-plugin.ts:4) 的 addLoader 不可用），需按当前 father 版本适配或临时移除自定义 loader 验证基础链路
+
+### 迁移使用指引
+
+- 安装依赖（在根目录）
+```bash
+pnpm install
+```
+
+- 在示例包执行 ESLint
+```bash
+pnpm --filter ./example run lint
+```
+
+- 如需在其它子包启用 ESLint，请在该子包新增 eslint.config.mjs（Flat Config），并在其 package.json 增加 lint 脚本
 ## 前期准备
 
 - [pnpm文档地址](https://pnpm.io/installation)
