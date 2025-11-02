@@ -43,3 +43,27 @@
 - **lint-staged**: 提交时自动运行 prettier 和 eslint
 - **husky**: git hooks 管理，提交时触发规范检查
 - **pnpm workspace**: 包间依赖通过 workspace 协议管理
+
+## 🆕 架构优化说明
+
+### 依赖管理策略
+
+- **版本独立性**: 各包可根据需要独立选择React、antd等依赖版本
+- **根级别清理**: 移除了根package.json中的外部依赖（react、react-dom等）
+- **pnpm配置优化**: 在 `pnpm.peerDependencyRules.ignoreMissing` 中添加 `react`、`react-dom`、`antd`
+- **包间独立**: 每个包管理自己的依赖版本，避免强制统一
+
+### ESLint现代化 (v9.x)
+
+- **配置统一**: 使用flat config格式的 `eslint.config.mjs` 替代传统的 `.eslintrc.js`
+- **版本升级**: 升级到 ESLint 9.38.0 和相关插件的最新版本
+- **移除分散配置**: 删除各包的独立ESLint配置，使用统一的根级别配置
+- **现代化规则**: 包含TypeScript、React Hooks、代码质量等完整规则集
+- **特殊文件处理**: 配置文件（.fatherrc.ts、rslib.config.ts等）有特殊的lint规则
+
+### AI助手注意事项
+
+- 当修改依赖相关文件时，注意各包的版本独立性
+- ESLint配置变更会影响整个项目的代码检查
+- 建议使用 `npx eslint . --fix` 自动修复可修复的问题
+- 保持现有多构建工具并存的架构设计

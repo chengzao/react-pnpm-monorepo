@@ -17,21 +17,18 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^18.4.3
         version: 18.6.3
+      '@eslint/js':
+        specifier: ^9.38.0
+        version: 9.38.0
       '@types/node':
         specifier: ^20.10.4
         version: 20.19.24
-      '@types/react':
-        specifier: ^18.2.45
-        version: 18.3.26
-      '@types/react-dom':
-        specifier: ^18.2.17
-        version: 18.3.7(@types/react@18.3.26)
       '@typescript-eslint/eslint-plugin':
-        specifier: ^6.14.0
-        version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+        specifier: ^8.19.1
+        version: 8.46.2(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
       '@typescript-eslint/parser':
-        specifier: ^6.14.0
-        version: 6.21.0(eslint@8.57.1)(typescript@5.9.3)
+        specifier: ^8.19.1
+        version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
       commitizen:
         specifier: ^4.3.0
         version: 4.3.1(@types/node@20.19.24)(typescript@5.9.3)
@@ -39,14 +36,26 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(@types/node@20.19.24)(typescript@5.9.3)
       eslint:
-        specifier: ^8.55.0
-        version: 8.57.1
+        specifier: ^9.17.0
+        version: 9.38.0(jiti@2.6.1)
       eslint-config-prettier:
         specifier: ^9.1.0
-        version: 9.1.2(eslint@8.57.1)
+        version: 9.1.2(eslint@9.38.0(jiti@2.6.1))
       eslint-plugin-prettier:
-        specifier: ^5.0.1
-        version: 5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)
+        specifier: ^5.2.1
+        version: 5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1))(prettier@3.6.2)
+      eslint-plugin-react:
+        specifier: ^7.37.3
+        version: 7.37.5(eslint@9.38.0(jiti@2.6.1))
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.38.0(jiti@2.6.1))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.16
+        version: 0.4.24(eslint@9.38.0(jiti@2.6.1))
+      globals:
+        specifier: ^16.0.0
+        version: 16.4.0
       husky:
         specifier: ^8.0.3
         version: 8.0.3
@@ -56,18 +65,15 @@ importers:
       prettier:
         specifier: ^3.1.1
         version: 3.6.2
-      react:
-        specifier: ^18.2.0
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.3.1(react@18.3.1)
       rimraf:
         specifier: ^5.0.5
         version: 5.0.10
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
+      typescript-eslint:
+        specifier: ^8.19.1
+        version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
 
   example:
     dependencies:
@@ -3900,6 +3906,10 @@ packages:
   array-ify@1.0.0:
     resolution: {integrity: sha512-c5AMf34bKdvPhQ7tBGhqkgKNUzMr4WUs+WDtC2ZUGOUncbxKMTvqxYctiseW3+L4bA8ec+GcZ6/A/FW4m8ukng==}
 
+  array-includes@3.1.9:
+    resolution: {integrity: sha512-FmeCCAenzH0KH381SPT5FZmiA/TmpndpcaShhfgEN9eCVjnFBqq3l1xrI42y8+PPLI6hypzou4GXw00WHmPBLQ==}
+    engines: {node: '>= 0.4'}
+
   array-initial@1.1.0:
     resolution: {integrity: sha512-BC4Yl89vneCYfpLrs5JU2aAu9/a+xWbeKhvISg9PT7eWFB9UlRvI+rKEtk6mgxWr3dSkk9gQ8hCrdqt06NXPdw==}
     engines: {node: '>=0.10.0'}
@@ -3930,6 +3940,22 @@ packages:
   array-unique@0.3.2:
     resolution: {integrity: sha512-SleRWjh9JUud2wH1hPs9rZBZ33H6T9HOiL0uwGnGx9FpE6wKGyfWugmbkEOIs6qWrZhg0LWeLziLrEwQJhs5mQ==}
     engines: {node: '>=0.10.0'}
+
+  array.prototype.findlast@1.2.5:
+    resolution: {integrity: sha512-CVvd6FHg1Z3POpBLxO6E6zr+rSKEQ9L6rZHAaY7lLfhKsWYUBBOuMs0e9o24oopj6H+geRCX0YJ+TJLBK2eHyQ==}
+    engines: {node: '>= 0.4'}
+
+  array.prototype.flat@1.3.3:
+    resolution: {integrity: sha512-rwG/ja1neyLqCuGZ5YYrznA62D4mZXg0i1cIskIUKSiqF3Cje9/wXAls9B9s1Wa2fomMsIv8czB8jZcPmxCXFg==}
+    engines: {node: '>= 0.4'}
+
+  array.prototype.flatmap@1.3.3:
+    resolution: {integrity: sha512-Y7Wt51eKJSyi80hFrJCePGGNo5ktJCslFuboqJsbf57CCPcm5zztluPlc4/aD8sWsKvlwatezpV4U1efk8kpjg==}
+    engines: {node: '>= 0.4'}
+
+  array.prototype.tosorted@1.1.4:
+    resolution: {integrity: sha512-p6Fx8B7b7ZhL/gmUsAy0D15WhvDccw3mnGNbZpi3pmeJdxtWsj2jEaI4Y6oo3XiHfzuSgPwKc04MYt6KgvC/wA==}
+    engines: {node: '>= 0.4'}
 
   arraybuffer.prototype.slice@1.0.4:
     resolution: {integrity: sha512-BNoCY6SXXPQ7gF2opIP4GBE+Xw7U+pHMYKuzjgCN3GwiaIR09UUeKfheyIry77QtrCBlC0KK0q5/TER/tYh3PQ==}
@@ -4855,6 +4881,10 @@ packages:
     resolution: {integrity: sha512-WkrWp9GR4KXfKGYzOLmTuGVi1UWFfws377n9cc55/tb6DuqyF6pcQ5AbiHEshaDpY9v6oaSr2XCDidGmMwdzIA==}
     engines: {node: '>=8'}
 
+  doctrine@2.1.0:
+    resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
+    engines: {node: '>=0.10.0'}
+
   doctrine@3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
@@ -4980,6 +5010,10 @@ packages:
   es-get-iterator@1.1.3:
     resolution: {integrity: sha512-sPZmqHBe6JIiTfN5q2pEi//TwxmAFHwj/XEuYjTuse78i8KxaqMTTzxPoFKuzRpDpTJ+0NAbpfenkmH2rePtuw==}
 
+  es-iterator-helpers@1.2.1:
+    resolution: {integrity: sha512-uDn+FE1yrDzyC0pCo961B2IHbdM8y/ACZsKD4dG6WqrjV53BADjwa7D+1aom2rsNVfLyDgU/eigvlJGJ08OQ4w==}
+    engines: {node: '>= 0.4'}
+
   es-module-lexer@1.7.0:
     resolution: {integrity: sha512-jEQoCwk8hyb2AZziIOLhDqpm5+2ww5uIE6lkO/6jcOCusfk6LhMHpXXfBLXTZ7Ydyt0j4VoUQv6uGNYbdW+kBA==}
 
@@ -4989,6 +5023,10 @@ packages:
 
   es-set-tostringtag@2.1.0:
     resolution: {integrity: sha512-j6vWzfrGVfyXxge+O0x5sh6cvxAog0a/4Rdd2K36zCMV5eJ+/+tOAngRO8cODMNWbVRdVlmGZQL2YS3yR8bIUA==}
+    engines: {node: '>= 0.4'}
+
+  es-shim-unscopables@1.1.0:
+    resolution: {integrity: sha512-d9T8ucsEhh8Bi1woXCf+TIKDIROLG5WCkxg8geBCbvk22kzwC5G2OnXVMO6FUsvQlgUUXQ2itephWDLqDzbeCw==}
     engines: {node: '>= 0.4'}
 
   es-to-primitive@1.3.0:
@@ -5088,6 +5126,12 @@ packages:
     resolution: {integrity: sha512-nLHIW7TEq3aLrEYWpVaJ1dRgFR+wLDPN8e8FpYAql/bMV2oBEfC37K0gLEGgv9fy66juNShSMV8OkTqzltcG/w==}
     peerDependencies:
       eslint: '>=8.40'
+
+  eslint-plugin-react@7.37.5:
+    resolution: {integrity: sha512-Qteup0SqU15kdocexFNAJMvCJEfa2xUKNV4CC1xsVMrIIqEy3SQ/rqyxCWNzfrd3/ldy6HMlD2e0JDVpDg2qIA==}
+    engines: {node: '>=4'}
+    peerDependencies:
+      eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7
 
   eslint-scope@5.1.1:
     resolution: {integrity: sha512-2NxwbF/hZ0KpepYN0cNbo+FN6XoK7GaHlQhgx/hIZl6Va0bF45RQOOwhLIy8lQDbuCiadSLCBnH2CFYquit5bw==}
@@ -6268,6 +6312,10 @@ packages:
     resolution: {integrity: sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==}
     engines: {node: '>=0.10.0'}
 
+  iterator.prototype@1.1.5:
+    resolution: {integrity: sha512-H0dkQoCa3b2VEeKQBOxFph+JAbcrQdE7KC0UkqwpLmv2EC4P41QXP+rqo9wYodACiG5/WM5s9oDApTU8utwj9g==}
+    engines: {node: '>= 0.4'}
+
   jackspeak@3.4.3:
     resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
@@ -6360,6 +6408,10 @@ packages:
   jsonparse@1.3.1:
     resolution: {integrity: sha512-POQXvpdL69+CluYsillJ7SUhKvytYjW9vG/GKpnf+xP8UWgYEM/RaMzHHofbALDiKbbP1W8UEYmgGl39WkPZsg==}
     engines: {'0': node >= 0.2.0}
+
+  jsx-ast-utils@3.3.5:
+    resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
+    engines: {node: '>=4.0'}
 
   just-debounce@1.1.0:
     resolution: {integrity: sha512-qpcRocdkUmf+UTNBYx5w6dexX5J31AKK1OmPwH630a83DdVVUIngk55RSAiIGpQyoH0dlr872VHfPjnQnK1qDQ==}
@@ -7124,6 +7176,10 @@ packages:
     resolution: {integrity: sha512-8u/hfXFRBD1O0hPUjioLhoWFHRmt6tKA4/vZPyckBr18l1KE9uHrFaFaUi8MDRTpi4uak2goyPTSNJLXX2k2Hw==}
     engines: {node: '>= 0.4'}
 
+  object.fromentries@2.0.8:
+    resolution: {integrity: sha512-k6E21FzySsSK5a21KRADBd/NGneRegFO5pLHfdQLpRDETUNJueLXs3WCzyQ3tFRDYgbq3KHGXfTbi2bs8WQ6rQ==}
+    engines: {node: '>= 0.4'}
+
   object.getprototypeof@1.0.7:
     resolution: {integrity: sha512-AS2h2hzryA95Z5SCy8DykYpdv82hHysDeMTBV5uWII4ljKiS0y2TC5aBQ+tHpCj0PfOy2/IPPY/O86F8uxx2gg==}
     engines: {node: '>= 0.4'}
@@ -7139,6 +7195,10 @@ packages:
   object.reduce@1.0.1:
     resolution: {integrity: sha512-naLhxxpUESbNkRqc35oQ2scZSJueHGQNUfMW/0U37IgN6tE2dgDWg3whf+NEliy3F/QysrO48XKUz/nGPe+AQw==}
     engines: {node: '>=0.10.0'}
+
+  object.values@1.2.1:
+    resolution: {integrity: sha512-gXah6aZrcUxjWg2zR2MwouP2eHlCBzdV4pygudehaKXSGW4v2AsRQUK+lwwXhii6KFZcunEnmSUoYp5CXibxtA==}
+    engines: {node: '>= 0.4'}
 
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
@@ -8044,6 +8104,9 @@ packages:
     resolution: {integrity: sha512-VWQJyU2bcDTgZw8kpfBpB/ejZASlCrzwz5f2hjb/zlujOEB4oeiAhHygAWq8ubsX2GVkD4kCU5V2dwOTaCY5EQ==}
     engines: {node: '>=0.12'}
 
+  prop-types@15.8.1:
+    resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
+
   prr@1.0.1:
     resolution: {integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==}
 
@@ -8354,6 +8417,9 @@ packages:
   react-error-overlay@6.0.9:
     resolution: {integrity: sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==}
 
+  react-is@16.13.1:
+    resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
+
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
 
@@ -8581,6 +8647,10 @@ packages:
   resolve@1.22.11:
     resolution: {integrity: sha512-RfqAvLnMl313r7c9oclB1HhUEAezcpLjz95wFH4LVuhk9JF/r22qmVP9AMmOU4vMX7Q8pN8jwNg/CSpdFnMjTQ==}
     engines: {node: '>= 0.4'}
+    hasBin: true
+
+  resolve@2.0.0-next.5:
+    resolution: {integrity: sha512-U7WjGVG9sH8tvjW5SmGbQuui75FiyjAX72HX15DwBBwF9dNiQZRQAg9nnPhYy+TUnE0+VcrttuvNI8oSxZcocA==}
     hasBin: true
 
   restore-cursor@3.1.0:
@@ -9116,6 +9186,13 @@ packages:
   string-width@7.2.0:
     resolution: {integrity: sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==}
     engines: {node: '>=18'}
+
+  string.prototype.matchall@4.0.12:
+    resolution: {integrity: sha512-6CC9uyBL+/48dYizRf7H7VAYCMCNTBeM78x/VTUe9bFEaxBepPJDa1Ow99LqI/1yF7kuy7Q3cQsYMrcjGUcskA==}
+    engines: {node: '>= 0.4'}
+
+  string.prototype.repeat@1.0.0:
+    resolution: {integrity: sha512-0u/TldDbKD8bFCQ/4f5+mNRrXwZ8hg2w7ZR8wa16e8z9XpePWl3eGEcUD0OXpEH/VJH/2G3gjUtR3ZOiBe2S/w==}
 
   string.prototype.trim@1.2.10:
     resolution: {integrity: sha512-Rs66F0P/1kedk5lyYyH9uBzuiI/kNRmwJAR9quK6VOtIpZ2G+hMZd+HQbbv25MgCA6gEffoMZYxlTod4WcdrKA==}
@@ -14016,6 +14093,17 @@ snapshots:
 
   array-ify@1.0.0: {}
 
+  array-includes@3.1.9:
+    dependencies:
+      call-bind: 1.0.8
+      call-bound: 1.0.4
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-object-atoms: 1.1.1
+      get-intrinsic: 1.3.0
+      is-string: 1.1.1
+      math-intrinsics: 1.1.0
+
   array-initial@1.1.0:
     dependencies:
       array-slice: 1.1.0
@@ -14040,6 +14128,37 @@ snapshots:
   array-union@2.1.0: {}
 
   array-unique@0.3.2: {}
+
+  array.prototype.findlast@1.2.5:
+    dependencies:
+      call-bind: 1.0.8
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-errors: 1.3.0
+      es-object-atoms: 1.1.1
+      es-shim-unscopables: 1.1.0
+
+  array.prototype.flat@1.3.3:
+    dependencies:
+      call-bind: 1.0.8
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-shim-unscopables: 1.1.0
+
+  array.prototype.flatmap@1.3.3:
+    dependencies:
+      call-bind: 1.0.8
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-shim-unscopables: 1.1.0
+
+  array.prototype.tosorted@1.1.4:
+    dependencies:
+      call-bind: 1.0.8
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-errors: 1.3.0
+      es-shim-unscopables: 1.1.0
 
   arraybuffer.prototype.slice@1.0.4:
     dependencies:
@@ -15174,6 +15293,10 @@ snapshots:
     dependencies:
       path-type: 4.0.0
 
+  doctrine@2.1.0:
+    dependencies:
+      esutils: 2.0.3
+
   doctrine@3.0.0:
     dependencies:
       esutils: 2.0.3
@@ -15368,6 +15491,25 @@ snapshots:
       isarray: 2.0.5
       stop-iteration-iterator: 1.1.0
 
+  es-iterator-helpers@1.2.1:
+    dependencies:
+      call-bind: 1.0.8
+      call-bound: 1.0.4
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-errors: 1.3.0
+      es-set-tostringtag: 2.1.0
+      function-bind: 1.1.2
+      get-intrinsic: 1.3.0
+      globalthis: 1.0.4
+      gopd: 1.2.0
+      has-property-descriptors: 1.0.2
+      has-proto: 1.2.0
+      has-symbols: 1.1.0
+      internal-slot: 1.1.0
+      iterator.prototype: 1.1.5
+      safe-array-concat: 1.1.3
+
   es-module-lexer@1.7.0: {}
 
   es-object-atoms@1.1.1:
@@ -15379,6 +15521,10 @@ snapshots:
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
       has-tostringtag: 1.0.2
+      hasown: 2.0.2
+
+  es-shim-unscopables@1.1.0:
+    dependencies:
       hasown: 2.0.2
 
   es-to-primitive@1.3.0:
@@ -15553,19 +15699,19 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-config-prettier@9.1.2(eslint@8.57.1):
+  eslint-config-prettier@9.1.2(eslint@9.38.0(jiti@2.6.1)):
     dependencies:
-      eslint: 8.57.1
+      eslint: 9.38.0(jiti@2.6.1)
 
-  eslint-plugin-prettier@5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2):
+  eslint-plugin-prettier@5.5.4(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1))(prettier@3.6.2):
     dependencies:
-      eslint: 8.57.1
+      eslint: 9.38.0(jiti@2.6.1)
       prettier: 3.6.2
       prettier-linter-helpers: 1.0.0
       synckit: 0.11.11
     optionalDependencies:
       '@types/eslint': 9.6.1
-      eslint-config-prettier: 9.1.2(eslint@8.57.1)
+      eslint-config-prettier: 9.1.2(eslint@9.38.0(jiti@2.6.1))
 
   eslint-plugin-react-hooks@4.6.2(eslint@8.57.1):
     dependencies:
@@ -15582,6 +15728,28 @@ snapshots:
   eslint-plugin-react-refresh@0.4.24(eslint@9.38.0(jiti@2.6.1)):
     dependencies:
       eslint: 9.38.0(jiti@2.6.1)
+
+  eslint-plugin-react@7.37.5(eslint@9.38.0(jiti@2.6.1)):
+    dependencies:
+      array-includes: 3.1.9
+      array.prototype.findlast: 1.2.5
+      array.prototype.flatmap: 1.3.3
+      array.prototype.tosorted: 1.1.4
+      doctrine: 2.1.0
+      es-iterator-helpers: 1.2.1
+      eslint: 9.38.0(jiti@2.6.1)
+      estraverse: 5.3.0
+      hasown: 2.0.2
+      jsx-ast-utils: 3.3.5
+      minimatch: 3.1.2
+      object.entries: 1.1.9
+      object.fromentries: 2.0.8
+      object.values: 1.2.1
+      prop-types: 15.8.1
+      resolve: 2.0.0-next.5
+      semver: 6.3.1
+      string.prototype.matchall: 4.0.12
+      string.prototype.repeat: 1.0.0
 
   eslint-scope@5.1.1:
     dependencies:
@@ -17045,6 +17213,15 @@ snapshots:
 
   isobject@3.0.1: {}
 
+  iterator.prototype@1.1.5:
+    dependencies:
+      define-data-property: 1.1.4
+      es-object-atoms: 1.1.1
+      get-intrinsic: 1.3.0
+      get-proto: 1.0.1
+      has-symbols: 1.1.0
+      set-function-name: 2.0.2
+
   jackspeak@3.4.3:
     dependencies:
       '@isaacs/cliui': 8.0.2
@@ -17136,6 +17313,13 @@ snapshots:
       graceful-fs: 4.2.11
 
   jsonparse@1.3.1: {}
+
+  jsx-ast-utils@3.3.5:
+    dependencies:
+      array-includes: 3.1.9
+      array.prototype.flat: 1.3.3
+      object.assign: 4.1.7
+      object.values: 1.2.1
 
   just-debounce@1.1.0: {}
 
@@ -17905,6 +18089,13 @@ snapshots:
       define-properties: 1.2.1
       es-object-atoms: 1.1.1
 
+  object.fromentries@2.0.8:
+    dependencies:
+      call-bind: 1.0.8
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-object-atoms: 1.1.1
+
   object.getprototypeof@1.0.7:
     dependencies:
       call-bind: 1.0.8
@@ -17926,6 +18117,13 @@ snapshots:
     dependencies:
       for-own: 1.0.0
       make-iterator: 1.0.1
+
+  object.values@1.2.1:
+    dependencies:
+      call-bind: 1.0.8
+      call-bound: 1.0.4
+      define-properties: 1.2.1
+      es-object-atoms: 1.1.1
 
   obuf@1.1.2: {}
 
@@ -18855,6 +19053,12 @@ snapshots:
   process@0.11.10: {}
 
   promise.series@0.2.0: {}
+
+  prop-types@15.8.1:
+    dependencies:
+      loose-envify: 1.4.0
+      object-assign: 4.1.1
+      react-is: 16.13.1
 
   prr@1.0.1:
     optional: true
@@ -19902,6 +20106,8 @@ snapshots:
 
   react-error-overlay@6.0.9: {}
 
+  react-is@16.13.1: {}
+
   react-is@17.0.2: {}
 
   react-is@18.3.1: {}
@@ -20144,6 +20350,12 @@ snapshots:
       path-parse: 1.0.7
 
   resolve@1.22.11:
+    dependencies:
+      is-core-module: 2.16.1
+      path-parse: 1.0.7
+      supports-preserve-symlinks-flag: 1.0.0
+
+  resolve@2.0.0-next.5:
     dependencies:
       is-core-module: 2.16.1
       path-parse: 1.0.7
@@ -20765,6 +20977,27 @@ snapshots:
       emoji-regex: 10.6.0
       get-east-asian-width: 1.4.0
       strip-ansi: 7.1.2
+
+  string.prototype.matchall@4.0.12:
+    dependencies:
+      call-bind: 1.0.8
+      call-bound: 1.0.4
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
+      es-errors: 1.3.0
+      es-object-atoms: 1.1.1
+      get-intrinsic: 1.3.0
+      gopd: 1.2.0
+      has-symbols: 1.1.0
+      internal-slot: 1.1.0
+      regexp.prototype.flags: 1.5.4
+      set-function-name: 2.0.2
+      side-channel: 1.1.0
+
+  string.prototype.repeat@1.0.0:
+    dependencies:
+      define-properties: 1.2.1
+      es-abstract: 1.24.0
 
   string.prototype.trim@1.2.10:
     dependencies:

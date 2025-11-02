@@ -37,7 +37,8 @@
     "peerDependencyRules": {
       "ignoreMissing": [
         "react",
-        "react-dom"
+        "react-dom",
+        "antd"
       ]
     }
   },
@@ -50,21 +51,23 @@
     "@changesets/cli": "^2.27.1",
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
+    "@eslint/js": "^9.38.0",
     "@types/node": "^20.10.4",
-    "@types/react": "^18.2.45",
-    "@types/react-dom": "^18.2.17",
-    "@typescript-eslint/eslint-plugin": "^6.14.0",
-    "@typescript-eslint/parser": "^6.14.0",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
     "commitizen": "^4.3.0",
     "cz-conventional-changelog": "^3.3.0",
-    "eslint": "^8.55.0",
+    "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^16.0.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
     "prettier": "^3.1.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "typescript-eslint": "^8.19.1",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   }
