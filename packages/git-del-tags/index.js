@@ -68,6 +68,9 @@ async function main() {
     return;
   }
 
+  let failedTags = [];
+  let successCount = 0;
+
   if (!remoteOnly) {
     console.log(chalk.yellow('\n🧹 删除本地标签...'));
     await execa('git', ['tag', '-d', ...tags]);
@@ -79,19 +82,29 @@ async function main() {
     console.log(chalk.yellow(`\n🌐 删除远程标签（并行度 ${concurrency}）...`));
 
     const limit = pLimit(concurrency);
+
     const tasks = tags.map((tag) =>
       limit(async () => {
         try {
           await execa('git', ['push', 'origin', `:refs/tags/${tag}`]);
           console.log(chalk.gray(`✔ 已删除远程标签: ${tag}`));
+          successCount++;
         } catch (err) {
           console.error(chalk.red(`❌ 删除失败: ${tag}`));
+          failedTags.push(tag);
         }
       }),
     );
     await Promise.all(tasks);
+
+    // 输出失败的标签列表
+    if (failedTags.length > 0) {
+      console.log(chalk.redBright('\n❌ 以下标签删除失败：'));
+      failedTags.forEach((tag) => console.log(chalk.red(`  - ${tag}`)));
+    }
   } else {
     console.log(chalk.gray('跳过远程标签删除 (--local-only 模式)'));
+    successCount = tags.length; // 如果只删除本地标签，所有标签都算成功
   }
 
   if (!localOnly) {
@@ -99,7 +112,10 @@ async function main() {
     await execa('git', ['fetch', '--prune', 'origin', '+refs/tags/*:refs/tags/*']);
   }
 
-  console.log(chalk.greenBright(`\n✅ 已完成删除 ${tags.length} 个标签。`));
+  console.log(chalk.greenBright(`\n✅ 已完成删除 ${successCount} 个标签。`));
+  if (failedTags.length > 0) {
+    console.log(chalk.red(`⚠️  失败 ${failedTags.length} 个标签，请手动检查并重试。`));
+  }
 }
 
 main().catch((err) => {
