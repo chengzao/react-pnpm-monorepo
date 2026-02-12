@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@babel/runtime": "^7.23.6",
-    "@vitejs/plugin-react": "^4.2.1",
+    "@vitejs/plugin-react": "^5.0.0",
     "fast-glob": "^3.3.2",
     "father": "^4.3.7",
     "vite": "^4.5.1",
